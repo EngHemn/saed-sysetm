@@ -2,7 +2,7 @@
 
 @source "../**/*.{js,ts,jsx,tsx}";
 
-@custom-variant dark (&:is(.dark, [data-theme="dark"]));
+@custom-variant dark (&:where(.dark, .dark *, [data-theme="dark"], [data-theme="dark"] *));
 
 :root {
   --background: oklch(1 0 0);
