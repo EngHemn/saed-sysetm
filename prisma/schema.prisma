@@ -27,8 +27,8 @@ model Product {
   stock       Int      @default(0)
   brand       String?
   categoryId  String
-  info        Json?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  info        Json?
   category    Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 }
