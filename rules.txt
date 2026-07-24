@@ -1,0 +1,73 @@
+Core rules
+1. Use Next.js App Router.
+2. Use Prisma for database access.
+3. Use PostgreSQL as the database.
+4. Use Zod for every schema validation.
+5. Do not use any.
+6. Do not write comments in the code.
+7. Use Tailwind CSS for all styling.
+8. Only use components from shadcn/ui.
+9. Use TanStack Query for loading, error, pending, and data states.
+10. Use React hooks properly, especially useCallback and useMemo only when needed for performance.
+11. Do not overuse memo; use React.memo only when it truly helps.
+12. Keep the code clean, reusable, and fully typed.
+13. For all uploads, use Cloudinary.
+
+MVVM structure
+Your project should follow this flow:
+UI Component → ViewModel → Use Case → Repository Interface → Repository Implementation → Prisma/Postgres
+
+Suggested folder structure
+src/
+  app/
+    api/
+    dashboard/
+    auth/
+    layout.tsx
+    page.tsx
+
+  presentation/
+    components/
+    screens/
+    viewmodels/
+    hooks/
+
+  domain/
+    entities/
+    schemas/
+    repositories/
+    usecases/
+
+  data/
+    repositories/
+    prisma/
+    mappers/
+    dtos/
+
+  lib/
+    utils/
+    zod/
+    query-client.ts
+    prisma.ts
+
+Coding rules
+1. UI must stay in presentation.
+2. Business logic must stay in domain.
+3. Database logic must stay in data.
+4. API route handlers must only connect request/response to the use case.
+5. All form inputs must be validated with Zod.
+6. All server data should be typed from Prisma and mapped safely.
+7. TanStack Query must control async states in the UI.
+8. Only use shared components from shadcn/ui.
+9. All actions in a table must have a tooltip.
+10. All pages must handle loading by skeleton and show error states.
+11. All actions with a pending state must handle the pending state (e.g., disable buttons, show spinners/loading state).
+12. All delete actions must show a confirmation dialog.
+
+Best practice rules
+1. Keep components small.
+2. Keep side effects outside the UI when possible.
+3. Use useMemo for expensive derived values.
+4. Use useCallback for stable handlers passed to child components.
+5. Do not duplicate logic in multiple places.
+6. Keep domain code independent from React.
