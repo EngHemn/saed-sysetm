@@ -1,9 +1,4 @@
 import type { Metadata, Viewport } from "next";
-import "@fontsource/alyamama/400.css";
-import "@fontsource/alyamama/500.css";
-import "@fontsource/alyamama/600.css";
-import "@fontsource/alyamama/700.css";
-import { amiri } from "@/lib/fonts";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -27,9 +22,10 @@ export const metadata: Metadata = {
 };
 
 import { ThemeProvider } from "@/presentation/components/theme-provider";
+import { Providers } from "@/presentation/components/providers";
 
 export const viewport: Viewport = {
-  themeColor: "#E63946",
+  themeColor: "#09090b",
   width: "device-width",
   initialScale: 1,
   maximumScale: 5,
@@ -48,14 +44,14 @@ export default function RootLayout({
       className="h-full scroll-smooth"
       suppressHydrationWarning
     >
-      <body className="min-h-[100dvh] overflow-x-hidden bg-background text-foreground antialiased">
+      <body className="min-h-[100dvh] overflow-x-hidden bg-background text-foreground antialiased font-sans">
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange
         >
-          {children}
+          <Providers>{children}</Providers>
         </ThemeProvider>
       </body>
     </html>
