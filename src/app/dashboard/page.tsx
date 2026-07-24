@@ -1,16 +1,25 @@
 "use client";
 
 import React, { Suspense } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { menuItems } from "@/presentation/components/DashboardSidebar";
 import { Card, CardContent } from "@/components/ui/card";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { ThemeToggle } from "@/presentation/components/theme-toggle";
 
 function DashboardContent() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const activeTab = searchParams.get("tab") || "product-management";
   const activeItem = menuItems.find((item) => item.id === activeTab) || menuItems[0];
+
+  React.useEffect(() => {
+    if (activeTab === "category-management") {
+      router.replace("/dashboard/categories?tab=category-management");
+    } else if (activeTab === "product-management") {
+      router.replace("/dashboard/products?tab=product-management");
+    }
+  }, [activeTab, router]);
 
   return (
     <div className="flex-1 flex flex-col h-full overflow-hidden bg-zinc-50 dark:bg-zinc-900/40">
