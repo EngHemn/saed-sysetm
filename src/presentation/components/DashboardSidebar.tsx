@@ -56,7 +56,13 @@ export function DashboardSidebar() {
   const activeTab = searchParams.get("tab") || "product-management";
 
   const handleTabChange = (id: string) => {
-    router.push(`/dashboard?tab=${id}`);
+    if (id === "category-management") {
+      router.push(`/dashboard/categories?tab=category-management`);
+    } else if (id === "product-management") {
+      router.push(`/dashboard/products?tab=product-management`);
+    } else {
+      router.push(`/dashboard?tab=${id}`);
+    }
   };
 
   const handleLogout = async () => {
