@@ -6,6 +6,7 @@ export interface UseProductsParams {
   search?: string;
   categoryId?: string;
   brand?: string;
+  actionAlert?: boolean;
   page?: number;
   perPage?: number;
   sortBy?: string;
@@ -22,6 +23,7 @@ export function useProducts(params: UseProductsParams = {}) {
       if (params.search) searchParams.set("search", params.search);
       if (params.categoryId) searchParams.set("categoryId", params.categoryId);
       if (params.brand) searchParams.set("brand", params.brand);
+      if (params.actionAlert !== undefined) searchParams.set("actionAlert", params.actionAlert.toString());
       if (params.page !== undefined) searchParams.set("page", params.page.toString());
       if (params.perPage !== undefined) searchParams.set("perPage", params.perPage.toString());
       if (params.sortBy) searchParams.set("sortBy", params.sortBy);
@@ -51,13 +53,36 @@ export function useProducts(params: UseProductsParams = {}) {
     },
   });
 
+  const toggleActionAlert = useMutation<Product, Error, { id: string; actionAlert?: boolean }>({
+    mutationFn: async ({ id, actionAlert }) => {
+      const res = await fetch(`/api/products/${id}/alert`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ actionAlert }),
+      });
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || "Failed to update action alert");
+      }
+      return res.json();
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+      queryClient.invalidateQueries({ queryKey: ["products", data.id] });
+    },
+  });
+
   return {
     products: getProducts.data?.products || [],
     total: getProducts.data?.total || 0,
     isLoading: getProducts.isLoading,
     error: getProducts.error,
+    refetch: getProducts.refetch,
     createProduct: createProduct.mutateAsync,
     isCreating: createProduct.isPending,
+    toggleActionAlert: toggleActionAlert.mutateAsync,
+    isTogglingAlert: toggleActionAlert.isPending,
+    togglingAlertId: toggleActionAlert.variables?.id,
   };
 }
 
@@ -112,6 +137,26 @@ export function useProduct(id?: string) {
     },
   });
 
+  const toggleActionAlert = useMutation<Product, Error, boolean | undefined>({
+    mutationFn: async (actionAlert) => {
+      if (!id) throw new Error("ID is required");
+      const res = await fetch(`/api/products/${id}/alert`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ actionAlert }),
+      });
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || "Failed to update action alert");
+      }
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+      queryClient.invalidateQueries({ queryKey: ["products", id] });
+    },
+  });
+
   return {
     product: getProduct.data,
     isLoading: getProduct.isLoading,
@@ -120,5 +165,7 @@ export function useProduct(id?: string) {
     isUpdating: updateProduct.isPending,
     deleteProduct: deleteProduct.mutateAsync,
     isDeleting: deleteProduct.isPending,
+    toggleActionAlert: toggleActionAlert.mutateAsync,
+    isTogglingAlert: toggleActionAlert.isPending,
   };
 }

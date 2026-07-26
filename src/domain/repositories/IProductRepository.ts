@@ -5,6 +5,7 @@ export interface FindProductsOptions {
   search?: string;
   categoryId?: string;
   brand?: string;
+  actionAlert?: boolean;
   page?: number;
   perPage?: number;
   sortBy?: string;
@@ -22,4 +23,5 @@ export interface IProductRepository {
   create(data: ProductInput): Promise<Product>;
   update(id: string, data: ProductInput): Promise<Product>;
   delete(id: string): Promise<Product>;
+  updateActionAlert(id: string, actionAlert: boolean): Promise<Product>;
 }

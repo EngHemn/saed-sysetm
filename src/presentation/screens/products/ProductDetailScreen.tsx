@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { ArrowLeft, Edit2, Package, AlertTriangle, CheckCircle, Tag } from "lucide-react";
+import { ArrowLeft, Edit2, AlertTriangle } from "lucide-react";
 import { useProduct } from "@/presentation/hooks/useProducts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { buttonVariants } from "@/components/ui/button";
@@ -50,7 +50,8 @@ export function ProductDetailScreen({ id }: ProductDetailScreenProps) {
           Product Not Found
         </h3>
         <p className="text-sm text-zinc-555 dark:text-zinc-400 max-w-sm mb-4">
-          {error?.message || "The product you are trying to view does not exist or has been removed."}
+          {error?.message ||
+            "The product you are trying to view does not exist or has been removed."}
         </p>
         <Link
           href="/dashboard/products?tab=product-management"
@@ -62,8 +63,8 @@ export function ProductDetailScreen({ id }: ProductDetailScreenProps) {
     );
   }
 
-  const savingAmount = product.initPrice - product.finalPrice;
-  const discountPercent = product.initPrice > 0 ? Math.round((savingAmount / product.initPrice) * 100) : 0;
+  const infoList =
+    (product.info as { title: string; description: string }[] | null) || [];
 
   return (
     <div className="space-y-6 max-w-2xl mx-auto">
@@ -73,7 +74,7 @@ export function ProductDetailScreen({ id }: ProductDetailScreenProps) {
             href="/dashboard/products?tab=product-management"
             className={cn(
               buttonVariants({ variant: "ghost", size: "icon" }),
-              "h-9 w-9 text-zinc-600 dark:text-zinc-400 flex items-center justify-center"
+              "h-9 w-9 text-zinc-600 dark:text-zinc-400 flex items-center justify-center",
             )}
           >
             <ArrowLeft className="h-5 w-5" />
@@ -91,7 +92,7 @@ export function ProductDetailScreen({ id }: ProductDetailScreenProps) {
           href={`/dashboard/products/${product.id}/edit?tab=product-management`}
           className={cn(
             buttonVariants({ variant: "outline" }),
-            "border-zinc-200 dark:border-zinc-800 text-zinc-950 dark:text-zinc-550 hover:bg-zinc-50 dark:hover:bg-zinc-900 flex items-center gap-2"
+            "border-zinc-200 dark:border-zinc-800 text-zinc-950 dark:text-zinc-550 hover:bg-zinc-50 dark:hover:bg-zinc-900 flex items-center gap-2",
           )}
         >
           <Edit2 className="h-4 w-4" />
@@ -99,7 +100,7 @@ export function ProductDetailScreen({ id }: ProductDetailScreenProps) {
         </Link>
       </div>
 
-      <Card className="border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 overflow-hidden shadow-sm">
+      <Card className="border border-zinc-200 pt-0 dark:border-zinc-800 bg-white dark:bg-zinc-950 overflow-hidden shadow-sm">
         {product.image && (
           <div className="relative h-72 w-full bg-zinc-50 dark:bg-zinc-900/30 border-b border-zinc-150 dark:border-zinc-900 flex items-center justify-center overflow-hidden">
             <Image
@@ -115,11 +116,17 @@ export function ProductDetailScreen({ id }: ProductDetailScreenProps) {
 
         <CardHeader className="space-y-3">
           <div className="flex flex-wrap items-center gap-2">
-            <Badge variant="secondary" className="bg-zinc-100 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-50 border border-zinc-200 dark:border-zinc-800">
+            <Badge
+              variant="secondary"
+              className="bg-zinc-100 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-50 border border-zinc-200 dark:border-zinc-800"
+            >
               {product.category?.title || "Uncategorized"}
             </Badge>
             {product.brand && (
-              <Badge variant="outline" className="border-zinc-250 dark:border-zinc-800 text-zinc-650 dark:text-zinc-400">
+              <Badge
+                variant="outline"
+                className="border-zinc-250 dark:border-zinc-800 text-zinc-650 dark:text-zinc-400"
+              >
                 Brand: {product.brand}
               </Badge>
             )}
@@ -135,8 +142,16 @@ export function ProductDetailScreen({ id }: ProductDetailScreenProps) {
               <span className="text-xs font-semibold text-zinc-450 dark:text-zinc-500 uppercase tracking-wider block">
                 Initial Price
               </span>
-              <span className="text-lg font-medium text-zinc-500 dark:text-zinc-400 line-through">
+              <span className="text-lg font-medium text-zinc-600 dark:text-zinc-400">
                 ${product.initPrice.toFixed(2)}
+              </span>
+            </div>
+            <div className="space-y-1">
+              <span className="text-xs font-semibold text-zinc-450 dark:text-zinc-500 uppercase tracking-wider block">
+                Middle Price
+              </span>
+              <span className="text-lg font-medium text-zinc-600 dark:text-zinc-400">
+                ${product.middlePrice.toFixed(2)}
               </span>
             </div>
             <div className="space-y-1">
@@ -145,15 +160,6 @@ export function ProductDetailScreen({ id }: ProductDetailScreenProps) {
               </span>
               <span className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">
                 ${product.finalPrice.toFixed(2)}
-              </span>
-            </div>
-            <div className="space-y-1">
-              <span className="text-xs font-semibold text-zinc-450 dark:text-zinc-500 uppercase tracking-wider block">
-                Offer / Discount
-              </span>
-              <span className="text-lg font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
-                <Tag className="h-4 w-4" />
-                {discountPercent > 0 ? `${discountPercent}% Off` : "No discount"}
               </span>
             </div>
           </div>
@@ -169,33 +175,36 @@ export function ProductDetailScreen({ id }: ProductDetailScreenProps) {
             </div>
           )}
 
-          {(() => {
-            const infoList = (product.info as unknown as { title: string; description: string }[]) || [];
-            if (infoList.length === 0) return null;
-            return (
-              <div className="space-y-3 border-t border-zinc-150 dark:border-zinc-900 pt-4">
-                <h4 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
-                  Specifications
-                </h4>
-                <div className="border border-zinc-200 dark:border-zinc-800 rounded-lg overflow-hidden divide-y divide-zinc-200 dark:divide-zinc-800">
-                  {infoList.map((item, idx) => (
-                    <div key={idx} className="grid grid-cols-3 text-sm px-4 py-2.5 bg-zinc-50/20 dark:bg-zinc-900/5">
-                      <span className="font-medium text-zinc-500 dark:text-zinc-400 col-span-1">
-                        {item.title}
-                      </span>
-                      <span className="text-zinc-900 dark:text-zinc-150 col-span-2">
-                        {item.description}
-                      </span>
-                    </div>
-                  ))}
-                </div>
+          {infoList.length > 0 && (
+            <div className="space-y-3 border-t border-zinc-150 dark:border-zinc-900 pt-4">
+              <h4 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+                Specifications
+              </h4>
+              <div className="border border-zinc-200 dark:border-zinc-800 rounded-lg overflow-hidden divide-y divide-zinc-200 dark:divide-zinc-800">
+                {infoList.map((item, idx) => (
+                  <div
+                    key={idx}
+                    className="grid grid-cols-3 text-sm px-4 py-2.5 bg-zinc-50/20 dark:bg-zinc-900/5"
+                  >
+                    <span className="font-medium text-zinc-500 dark:text-zinc-400 col-span-1">
+                      {item.title}
+                    </span>
+                    <span className="text-zinc-900 dark:text-zinc-150 col-span-2">
+                      {item.description}
+                    </span>
+                  </div>
+                ))}
               </div>
-            );
-          })()}
+            </div>
+          )}
 
           <div className="border-t border-zinc-150 dark:border-zinc-900 pt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-zinc-450 dark:text-zinc-500">
-            <span>Created on: {new Date(product.createdAt).toLocaleDateString()}</span>
-            <span>Last updated: {new Date(product.updatedAt).toLocaleDateString()}</span>
+            <span>
+              Created on: {new Date(product.createdAt).toLocaleDateString()}
+            </span>
+            <span>
+              Last updated: {new Date(product.updatedAt).toLocaleDateString()}
+            </span>
           </div>
         </CardContent>
       </Card>

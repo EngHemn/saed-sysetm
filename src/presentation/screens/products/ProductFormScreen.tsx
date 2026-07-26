@@ -41,15 +41,17 @@ export function ProductFormScreen({ id }: ProductFormScreenProps) {
     reset,
     formState: { errors },
   } = useForm<ProductInput>({
-    resolver: zodResolver(productSchema) as any,
+    resolver: zodResolver(productSchema),
     defaultValues: {
       title: "",
       description: "",
       image: "",
       initPrice: 0,
+      middlePrice: 0,
       finalPrice: 0,
       brand: "",
       categoryId: "",
+      actionAlert: false,
       info: [],
     },
   });
@@ -90,10 +92,12 @@ export function ProductFormScreen({ id }: ProductFormScreenProps) {
         description: product.description || "",
         image: product.image || "",
         initPrice: product.initPrice,
+        middlePrice: product.middlePrice,
         finalPrice: product.finalPrice,
         brand: product.brand || "",
         categoryId: product.categoryId,
-        info: (product.info as any) || [],
+        actionAlert: product.actionAlert,
+        info: (product.info as { title: string; description: string }[]) || [],
       });
     }
   }, [product, reset]);
@@ -124,8 +128,9 @@ export function ProductFormScreen({ id }: ProductFormScreenProps) {
       } else {
         throw new Error(data.error || "Upload failed");
       }
-    } catch (err: any) {
-      setImageError(err.message || "An error occurred during upload");
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "An error occurred during upload";
+      setImageError(message);
     } finally {
       setUploadingImage(false);
     }
@@ -143,7 +148,7 @@ export function ProductFormScreen({ id }: ProductFormScreenProps) {
         await createProduct(data);
       }
       router.push("/dashboard/products?tab=product-management");
-    } catch (err) {
+    } catch (err: unknown) {
       console.error(err);
     }
   };
@@ -219,7 +224,7 @@ export function ProductFormScreen({ id }: ProductFormScreenProps) {
                     value={selectedCategoryId}
                     onValueChange={(val) => {
                       setValue("categoryId", val || "", { shouldValidate: true });
-                      setValue("brand", ""); // reset brand when category changes
+                      setValue("brand", "");
                     }}
                   >
                     <SelectTrigger className="bg-zinc-50 dark:bg-zinc-900/30 border-zinc-200 dark:border-zinc-800">
@@ -275,7 +280,7 @@ export function ProductFormScreen({ id }: ProductFormScreenProps) {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="initPrice" className="text-zinc-900 dark:text-zinc-300">
                   Initial Price ($) <span className="text-red-500">*</span>
@@ -285,12 +290,31 @@ export function ProductFormScreen({ id }: ProductFormScreenProps) {
                   type="number"
                   step="0.01"
                   placeholder="0.00"
-                  {...register("initPrice")}
+                  {...register("initPrice", { valueAsNumber: true })}
                   className="bg-zinc-50 dark:bg-zinc-900/30 border-zinc-200 dark:border-zinc-800 focus-visible:ring-zinc-950 dark:focus-visible:ring-zinc-300"
                 />
                 {errors.initPrice && (
                   <p className="text-xs font-medium text-red-655 dark:text-red-400">
                     {errors.initPrice.message}
+                  </p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="middlePrice" className="text-zinc-900 dark:text-zinc-300">
+                  Middle Price ($) <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  id="middlePrice"
+                  type="number"
+                  step="0.01"
+                  placeholder="0.00"
+                  {...register("middlePrice", { valueAsNumber: true })}
+                  className="bg-zinc-50 dark:bg-zinc-900/30 border-zinc-200 dark:border-zinc-800 focus-visible:ring-zinc-950 dark:focus-visible:ring-zinc-300"
+                />
+                {errors.middlePrice && (
+                  <p className="text-xs font-medium text-red-655 dark:text-red-400">
+                    {errors.middlePrice.message}
                   </p>
                 )}
               </div>
@@ -304,7 +328,7 @@ export function ProductFormScreen({ id }: ProductFormScreenProps) {
                   type="number"
                   step="0.01"
                   placeholder="0.00"
-                  {...register("finalPrice")}
+                  {...register("finalPrice", { valueAsNumber: true })}
                   className="bg-zinc-50 dark:bg-zinc-900/30 border-zinc-200 dark:border-zinc-800 focus-visible:ring-zinc-950 dark:focus-visible:ring-zinc-300"
                 />
                 {errors.finalPrice && (

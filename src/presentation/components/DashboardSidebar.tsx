@@ -9,6 +9,7 @@ import {
   StickyNote,
   ClipboardList,
   LogOut,
+  Building,
 } from "lucide-react";
 import {
   Sidebar,
@@ -32,6 +33,11 @@ export const menuItems = [
     id: "category-management",
     title: "Category Management",
     icon: FolderTree,
+  },
+  {
+    id: "company-management",
+    title: "Company Management",
+    icon: Building,
   },
   {
     id: "bill-management",
@@ -60,6 +66,14 @@ export function DashboardSidebar() {
       router.push(`/dashboard/categories?tab=category-management`);
     } else if (id === "product-management") {
       router.push(`/dashboard/products?tab=product-management`);
+    } else if (id === "company-management") {
+      router.push(`/dashboard/companies?tab=company-management`);
+    } else if (id === "bill-management") {
+      router.push(`/dashboard/bills?tab=bill-management`);
+    } else if (id === "note") {
+      router.push(`/dashboard/notes?tab=note`);
+    } else if (id === "needs-management") {
+      router.push(`/dashboard/needs?tab=needs-management`);
     } else {
       router.push(`/dashboard?tab=${id}`);
     }

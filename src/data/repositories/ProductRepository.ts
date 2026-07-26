@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { Product } from "@/domain/entities/Product";
 import { IProductRepository, FindProductsOptions, FindProductsResult } from "@/domain/repositories/IProductRepository";
@@ -8,12 +9,13 @@ export class ProductRepository implements IProductRepository {
     const search = options?.search;
     const categoryId = options?.categoryId && options.categoryId !== "all" ? options.categoryId : undefined;
     const brand = options?.brand && options.brand !== "all" ? options.brand : undefined;
+    const actionAlert = options?.actionAlert;
     const page = options?.page || 1;
     const perPage = options?.perPage || 10;
     const sortBy = options?.sortBy || "createdAt";
     const sortOrder = options?.sortOrder || "desc";
 
-    const where: any = {};
+    const where: Prisma.ProductWhereInput = {};
 
     if (search) {
       where.OR = [
@@ -31,10 +33,14 @@ export class ProductRepository implements IProductRepository {
       where.brand = brand;
     }
 
-    const orderBy: any = {};
-    const validSortFields = ["title", "initPrice", "finalPrice", "createdAt"];
+    if (actionAlert !== undefined) {
+      where.actionAlert = actionAlert;
+    }
+
+    const orderBy: Prisma.ProductOrderByWithRelationInput = {};
+    const validSortFields = ["title", "initPrice", "middlePrice", "finalPrice", "createdAt"];
     if (validSortFields.includes(sortBy)) {
-      orderBy[sortBy] = sortOrder;
+      orderBy[sortBy as keyof Prisma.ProductOrderByWithRelationInput] = sortOrder;
     } else {
       orderBy.createdAt = "desc";
     }
@@ -62,57 +68,78 @@ export class ProductRepository implements IProductRepository {
   }
 
   async findById(id: string): Promise<Product | null> {
-    return prisma.product.findUnique({
+    const product = await prisma.product.findUnique({
       where: { id },
       include: {
         category: true,
       },
-    }) as unknown as Product | null;
+    });
+    return product as unknown as Product | null;
   }
 
   async create(data: ProductInput): Promise<Product> {
-    return prisma.product.create({
+    const product = await prisma.product.create({
       data: {
         title: data.title,
         description: data.description || null,
         image: data.image || null,
         initPrice: data.initPrice,
+        middlePrice: data.middlePrice,
         finalPrice: data.finalPrice,
         brand: data.brand || null,
         categoryId: data.categoryId,
-        info: data.info || null,
+        actionAlert: data.actionAlert ?? false,
+        info: data.info ? (data.info as unknown as Prisma.InputJsonValue) : Prisma.DbNull,
       },
       include: {
         category: true,
       },
-    }) as unknown as Product;
+    });
+    return product as unknown as Product;
   }
 
   async update(id: string, data: ProductInput): Promise<Product> {
-    return prisma.product.update({
+    const product = await prisma.product.update({
       where: { id },
       data: {
         title: data.title,
         description: data.description || null,
         image: data.image || null,
         initPrice: data.initPrice,
+        middlePrice: data.middlePrice,
         finalPrice: data.finalPrice,
         brand: data.brand || null,
         categoryId: data.categoryId,
-        info: data.info || null,
+        actionAlert: data.actionAlert ?? false,
+        info: data.info ? (data.info as unknown as Prisma.InputJsonValue) : Prisma.DbNull,
       },
       include: {
         category: true,
       },
-    }) as unknown as Product;
+    });
+    return product as unknown as Product;
   }
 
   async delete(id: string): Promise<Product> {
-    return prisma.product.delete({
+    const product = await prisma.product.delete({
       where: { id },
       include: {
         category: true,
       },
-    }) as unknown as Product;
+    });
+    return product as unknown as Product;
+  }
+
+  async updateActionAlert(id: string, actionAlert: boolean): Promise<Product> {
+    const product = await prisma.product.update({
+      where: { id },
+      data: {
+        actionAlert,
+      },
+      include: {
+        category: true,
+      },
+    });
+    return product as unknown as Product;
   }
 }

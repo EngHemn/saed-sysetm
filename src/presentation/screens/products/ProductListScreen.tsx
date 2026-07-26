@@ -8,7 +8,6 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useCategories } from "@/presentation/hooks/useCategories";
@@ -41,6 +40,7 @@ export function ProductListScreen() {
 
   const [selectedCategoryFilter, setSelectedCategoryFilter] = useState("all");
   const [selectedBrandFilter, setSelectedBrandFilter] = useState("all");
+  const [selectedAlertFilter, setSelectedAlertFilter] = useState<"all" | "alert" | "no_alert">("all");
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -51,12 +51,21 @@ export function ProductListScreen() {
 
   useEffect(() => {
     setPage(1);
-  }, [debouncedQuery, selectedCategoryFilter, selectedBrandFilter]);
+  }, [debouncedQuery, selectedCategoryFilter, selectedBrandFilter, selectedAlertFilter]);
 
-  const { products, total, isLoading, error } = useProducts({
+  const {
+    products,
+    total,
+    isLoading,
+    error,
+    toggleActionAlert,
+    isTogglingAlert,
+    togglingAlertId,
+  } = useProducts({
     search: debouncedQuery,
     categoryId: selectedCategoryFilter !== "all" ? selectedCategoryFilter : undefined,
     brand: selectedBrandFilter !== "all" ? selectedBrandFilter : undefined,
+    actionAlert: selectedAlertFilter === "alert" ? true : selectedAlertFilter === "no_alert" ? false : undefined,
     page,
     perPage,
     sortBy,
@@ -66,13 +75,13 @@ export function ProductListScreen() {
   const { categories } = useCategories();
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
   const { deleteProduct, isDeleting } = useProduct(deleteTargetId || undefined);
-  const [activeAlerts, setActiveAlerts] = useState<Record<string, boolean>>({});
 
-  const toggleAlert = (productId: string) => {
-    setActiveAlerts((prev) => ({
-      ...prev,
-      [productId]: !prev[productId],
-    }));
+  const handleToggleAlert = async (productId: string, currentAlertStatus: boolean) => {
+    try {
+      await toggleActionAlert({ id: productId, actionAlert: !currentAlertStatus });
+    } catch (err: unknown) {
+      console.error(err);
+    }
   };
 
   const selectedCategory = categories.find((c) => c.id === selectedCategoryFilter);
@@ -85,6 +94,7 @@ export function ProductListScreen() {
   const clearFilters = () => {
     setSelectedCategoryFilter("all");
     setSelectedBrandFilter("all");
+    setSelectedAlertFilter("all");
     setSearchQuery("");
     setPage(1);
   };
@@ -120,7 +130,7 @@ export function ProductListScreen() {
     if (!deleteTargetId) return;
     try {
       await deleteProduct();
-    } catch (e) {
+    } catch (e: unknown) {
       console.error(e);
     } finally {
       setDeleteTargetId(null);
@@ -166,8 +176,7 @@ export function ProductListScreen() {
         </Link>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-xs">
-        {/* Search */}
+      <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 p-4 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-xs">
         <div className="relative col-span-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400 dark:text-zinc-555" />
           <Input
@@ -178,7 +187,6 @@ export function ProductListScreen() {
           />
         </div>
 
-        {/* Category Filter */}
         <div>
           <Select value={selectedCategoryFilter} onValueChange={(val) => {
             setSelectedCategoryFilter(val || "all");
@@ -200,7 +208,6 @@ export function ProductListScreen() {
           </Select>
         </div>
 
-        {/* Brand Filter */}
         <div>
           <Select value={selectedBrandFilter} onValueChange={(val) => setSelectedBrandFilter(val || "all")}>
             <SelectTrigger className="w-full bg-zinc-50 dark:bg-zinc-900/30 border-zinc-200 dark:border-zinc-800">
@@ -215,6 +222,21 @@ export function ProductListScreen() {
                   {brand}
                 </SelectItem>
               ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div>
+          <Select value={selectedAlertFilter} onValueChange={(val) => setSelectedAlertFilter((val as "all" | "alert" | "no_alert") || "all")}>
+            <SelectTrigger className="w-full bg-zinc-50 dark:bg-zinc-900/30 border-zinc-200 dark:border-zinc-800">
+              <SelectValue placeholder="All Alerts">
+                {selectedAlertFilter === "all" ? "All Alerts" : selectedAlertFilter === "alert" ? "With Action Alert" : "Without Action Alert"}
+              </SelectValue>
+            </SelectTrigger>
+            <SelectContent className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800">
+              <SelectItem value="all">All Alerts</SelectItem>
+              <SelectItem value="alert">With Action Alert</SelectItem>
+              <SelectItem value="no_alert">Without Action Alert</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -258,13 +280,14 @@ export function ProductListScreen() {
                 <TableHead className="w-16">Image</TableHead>
                 {renderSortHeader("title", "Title")}
                 <TableHead>Category & Brand</TableHead>
-                {renderSortHeader("initPrice", "Init Price", "text-right")}
+                {renderSortHeader("middlePrice", "Middle Price", "text-right")}
                 {renderSortHeader("finalPrice", "Final Price", "text-right")}
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filteredProducts.map((product) => {
+                const isToggling = isTogglingAlert && togglingAlertId === product.id;
                 return (
                   <TableRow
                     key={product.id}
@@ -301,17 +324,10 @@ export function ProductListScreen() {
                       </div>
                     </TableCell>
                     <TableCell className="text-right font-medium text-zinc-600 dark:text-zinc-400">
-                      ${product.initPrice.toFixed(2)}
+                      ${product.middlePrice.toFixed(2)}
                     </TableCell>
                     <TableCell className="text-right font-bold text-zinc-900 dark:text-zinc-50">
-                      <div className="flex flex-col items-end">
-                        <span>${product.finalPrice.toFixed(2)}</span>
-                        {product.finalPrice < product.initPrice * 0.8 && (
-                          <Badge variant="destructive" className="mt-1 py-0 px-1.5 text-[9px] uppercase tracking-wider bg-red-500 hover:bg-red-500">
-                            Low Alert
-                          </Badge>
-                        )}
-                      </div>
+                      ${product.finalPrice.toFixed(2)}
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end items-center gap-1">
@@ -322,20 +338,25 @@ export function ProductListScreen() {
                                 <Button
                                   variant="ghost"
                                   size="icon"
-                                  onClick={() => toggleAlert(product.id)}
+                                  disabled={isToggling}
+                                  onClick={() => handleToggleAlert(product.id, product.actionAlert)}
                                   className={cn(
                                     "h-8 w-8 transition-colors",
-                                    activeAlerts[product.id]
+                                    product.actionAlert
                                       ? "text-amber-500 hover:text-amber-600 dark:text-amber-400 dark:hover:text-amber-300"
                                       : "text-zinc-400 hover:text-zinc-500 dark:text-zinc-650 dark:hover:text-zinc-500"
                                   )}
                                 >
-                                  <AlertTriangle className={cn("h-4 w-4", activeAlerts[product.id] && "fill-current")} />
+                                  {isToggling ? (
+                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                  ) : (
+                                    <AlertTriangle className={cn("h-4 w-4", product.actionAlert && "fill-current")} />
+                                  )}
                                 </Button>
                               }
                             />
                             <TooltipContent>
-                              <p>{activeAlerts[product.id] ? "Disable Price Alert" : "Enable Price Alert"}</p>
+                              <p>{product.actionAlert ? "Disable Action Alert" : "Enable Action Alert"}</p>
                             </TooltipContent>
                           </Tooltip>
                         </TooltipProvider>
@@ -417,7 +438,7 @@ export function ProductListScreen() {
               <Select
                 value={perPage.toString()}
                 onValueChange={(val) => {
-                  setPerPage(parseInt(val || "10"));
+                  setPerPage(parseInt(val || "10", 10));
                   setPage(1);
                 }}
               >
