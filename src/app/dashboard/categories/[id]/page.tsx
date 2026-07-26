@@ -3,7 +3,7 @@
 import React, { use } from "react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { ThemeToggle } from "@/presentation/components/theme-toggle";
-import { CategoryDetailScreen } from "@/presentation/screens/CategoryDetailScreen";
+import { CategoryDetailScreen } from "@/presentation/screens/categoery/CategoryDetailScreen";
 
 export default function CategoryDetailPage({
   params,

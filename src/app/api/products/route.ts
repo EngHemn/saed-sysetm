@@ -13,8 +13,12 @@ export async function GET(request: NextRequest) {
     const search = searchParams.get("search") || undefined;
     const categoryId = searchParams.get("categoryId") || undefined;
     const brand = searchParams.get("brand") || undefined;
-    const page = searchParams.get("page") ? parseInt(searchParams.get("page")!) : undefined;
-    const perPage = searchParams.get("perPage") ? parseInt(searchParams.get("perPage")!) : undefined;
+    const actionAlertParam = searchParams.get("actionAlert");
+    const actionAlert = actionAlertParam === "true" ? true : actionAlertParam === "false" ? false : undefined;
+    const pageStr = searchParams.get("page");
+    const perPageStr = searchParams.get("perPage");
+    const page = pageStr ? parseInt(pageStr, 10) : undefined;
+    const perPage = perPageStr ? parseInt(perPageStr, 10) : undefined;
     const sortBy = searchParams.get("sortBy") || undefined;
     const sortOrder = (searchParams.get("sortOrder") as "asc" | "desc") || undefined;
 
@@ -22,17 +26,16 @@ export async function GET(request: NextRequest) {
       search,
       categoryId,
       brand,
+      actionAlert,
       page,
       perPage,
       sortBy,
       sortOrder,
     });
     return NextResponse.json(result);
-  } catch (error: any) {
-    return NextResponse.json(
-      { error: error.message || "Failed to fetch products" },
-      { status: 500 }
-    );
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : "Failed to fetch products";
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }
 
@@ -41,10 +44,8 @@ export async function POST(request: Request) {
     const body = await request.json();
     const product = await createProductUseCase.execute(body);
     return NextResponse.json(product, { status: 201 });
-  } catch (error: any) {
-    return NextResponse.json(
-      { error: error.message || "Failed to create product" },
-      { status: 400 }
-    );
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : "Failed to create product";
+    return NextResponse.json({ error: errorMessage }, { status: 400 });
   }
 }

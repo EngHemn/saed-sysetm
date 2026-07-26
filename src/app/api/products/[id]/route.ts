@@ -21,11 +21,9 @@ export async function GET(request: NextRequest, context: Context) {
       return NextResponse.json({ error: "Product not found" }, { status: 404 });
     }
     return NextResponse.json(product);
-  } catch (error: any) {
-    return NextResponse.json(
-      { error: error.message || "Failed to fetch product" },
-      { status: 500 }
-    );
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : "Failed to fetch product";
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }
 
@@ -35,11 +33,9 @@ export async function PUT(request: Request, context: Context) {
     const body = await request.json();
     const product = await updateProductUseCase.execute(id, body);
     return NextResponse.json(product);
-  } catch (error: any) {
-    return NextResponse.json(
-      { error: error.message || "Failed to update product" },
-      { status: 400 }
-    );
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : "Failed to update product";
+    return NextResponse.json({ error: errorMessage }, { status: 400 });
   }
 }
 
@@ -48,10 +44,8 @@ export async function DELETE(request: Request, context: Context) {
     const { id } = await context.params;
     const product = await deleteProductUseCase.execute(id);
     return NextResponse.json(product);
-  } catch (error: any) {
-    return NextResponse.json(
-      { error: error.message || "Failed to delete product" },
-      { status: 400 }
-    );
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : "Failed to delete product";
+    return NextResponse.json({ error: errorMessage }, { status: 400 });
   }
 }

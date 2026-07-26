@@ -3,7 +3,7 @@
 import React from "react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { ThemeToggle } from "@/presentation/components/theme-toggle";
-import { ProductListScreen } from "@/presentation/screens/ProductListScreen";
+import { ProductListScreen } from "@/presentation/screens/products/ProductListScreen";
 
 export default function ProductsPage() {
   return (

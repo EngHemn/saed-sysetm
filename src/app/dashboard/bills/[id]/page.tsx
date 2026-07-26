@@ -1,16 +1,16 @@
 "use client";
 
-import React, { use } from "react";
+import React from "react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { ThemeToggle } from "@/presentation/components/theme-toggle";
-import { CategoryFormScreen } from "@/presentation/screens/categoery/CategoryFormScreen";
+import { BillDetailScreen } from "@/presentation/screens/bill/BillDetailScreen";
 
-export default function EditCategoryPage({
+export default function BillDetailPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const { id } = use(params);
+  const { id } = React.use(params);
 
   return (
     <div className="flex-1 flex flex-col h-full overflow-hidden bg-zinc-50/50 dark:bg-zinc-900/10">
@@ -18,15 +18,15 @@ export default function EditCategoryPage({
         <div className="flex items-center gap-3">
           <SidebarTrigger className="md:hidden text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900" />
           <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-50">
-            Category Management
+            Bill Management
           </h2>
         </div>
         <ThemeToggle />
       </header>
 
       <main className="flex-1 p-6 md:p-8 overflow-y-auto">
-        <div className="max-w-4xl mx-auto">
-          <CategoryFormScreen id={id} />
+        <div className="max-w-5xl mx-auto">
+          <BillDetailScreen id={id} />
         </div>
       </main>
     </div>

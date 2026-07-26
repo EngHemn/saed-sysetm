@@ -18,6 +18,12 @@ function DashboardContent() {
       router.replace("/dashboard/categories?tab=category-management");
     } else if (activeTab === "product-management") {
       router.replace("/dashboard/products?tab=product-management");
+    } else if (activeTab === "bill-management") {
+      router.replace("/dashboard/bills?tab=bill-management");
+    } else if (activeTab === "note") {
+      router.replace("/dashboard/notes?tab=note");
+    } else if (activeTab === "needs-management") {
+      router.replace("/dashboard/needs?tab=needs-management");
     }
   }, [activeTab, router]);
 
