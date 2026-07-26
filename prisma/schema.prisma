@@ -18,17 +18,90 @@ model Category {
 }
 
 model Product {
-  id          String   @id @default(uuid())
+  id          String     @id @default(uuid())
   title       String
   description String?
   image       String?
   initPrice   Float
   finalPrice  Float
-  stock       Int      @default(0)
+  stock       Int        @default(0)
   brand       String?
   categoryId  String
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  info        Json?
+  actionAlert Boolean    @default(false)
+  middlePrice Float      @default(0)
+  billItems   BillItem[]
+  needs       Need[]
+  category    Category   @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+}
+
+model Bill {
+  id              String     @id @default(uuid())
+  billNumber      String     @unique
+  customerName    String
+  phone           String
+  address         String?
+  billDate        DateTime   @default(now())
+  totalAmount     Float      @default(0)
+  paidAmount      Float      @default(0)
+  remainingAmount Float      @default(0)
+  paymentStatus   String     @default("Unpaid")
+  notes           String?
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+  image           String?
+  companyId       String?
+  company         Company?   @relation(fields: [companyId], references: [id])
+  items           BillItem[]
+}
+
+model Company {
+  id        String   @id @default(uuid())
+  name      String
+  phone     String
+  image     String?
+  note      String?
+  address   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  bills     Bill[]
+}
+
+model BillItem {
+  id           String   @id @default(uuid())
+  billId       String
+  productId    String?
+  productName  String
+  quantity     Int
+  unitPrice    Float
+  totalPrice   Float
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  finalPrice   Float    @default(0)
+  initialPrice Float    @default(0)
+  middlePrice  Float    @default(0)
+  bill         Bill     @relation(fields: [billId], references: [id], onDelete: Cascade)
+  product      Product? @relation(fields: [productId], references: [id])
+}
+
+model Note {
+  id          String   @id @default(uuid())
+  title       String
+  description String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  info        Json?
-  category    Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+}
+
+model Need {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  image       String?
+  priority    String   @default("Medium")
+  productId   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  product     Product? @relation(fields: [productId], references: [id])
 }
