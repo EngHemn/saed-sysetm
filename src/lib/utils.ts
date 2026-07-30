@@ -20,3 +20,16 @@ export function randomRange(min: number, max: number): number {
 export function formatPhoneForDisplay(phone: string): string {
   return phone;
 }
+
+export function getLocalizedValue(value: string | null | undefined, lang: string): string {
+  if (!value) return "";
+  try {
+    const parsed = JSON.parse(value);
+    if (parsed && typeof parsed === "object") {
+      return parsed[lang] || parsed["en"] || parsed["ku"] || "";
+    }
+  } catch {
+    // Not JSON, return legacy plain text as is
+  }
+  return value;
+}

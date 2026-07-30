@@ -3,18 +3,18 @@
 import React from "react";
 import Link from "next/link";
 import { ArrowLeft, Edit2, Loader2, FolderOpen, Calendar } from "lucide-react";
-import { useCategory } from "@/presentation/hooks/useCategories";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
+import { useCategoryDetailsViewModel } from "@/presentation/viewmodels/useCategoryDetailsViewModel";
 
 interface CategoryDetailScreenProps {
   id: string;
 }
 
 export function CategoryDetailScreen({ id }: CategoryDetailScreenProps) {
-  const { category, isLoading, error } = useCategory(id);
+  const { category, isLoading, error, t, dir } = useCategoryDetailsViewModel(id);
 
   if (isLoading) {
     return (
@@ -26,16 +26,15 @@ export function CategoryDetailScreen({ id }: CategoryDetailScreenProps) {
 
   if (error || !category) {
     return (
-      <div className="flex flex-col items-center justify-center p-8 text-center min-h-[400px]">
+      <div className="flex flex-col items-center justify-center p-8 text-center min-h-[400px]" dir={dir}>
         <div className="bg-red-50 dark:bg-red-950/20 text-red-650 dark:text-red-400 p-4 rounded-full mb-4">
           <FolderOpen className="h-8 w-8" />
         </div>
         <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-50 mb-2">
-          Category Not Found
+          {t("category_not_found", { defaultValue: "Category Not Found" })}
         </h3>
         <p className="text-sm text-zinc-550 dark:text-zinc-400 max-w-sm">
-          {error?.message ||
-            "The category you are trying to view does not exist or could not be loaded."}
+          {error?.message || t("no_results_desc")}
         </p>
         <Link
           href="/dashboard/categories?tab=category-management"
@@ -44,40 +43,31 @@ export function CategoryDetailScreen({ id }: CategoryDetailScreenProps) {
             "mt-4 inline-flex",
           )}
         >
-          Back to Categories
+          {t("back_to_list")}
         </Link>
       </div>
     );
   }
 
-  const formattedDate = new Date(category.createdAt).toLocaleDateString(
-    "en-US",
-    {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    },
-  );
-
   return (
-    <div className="space-y-6 max-w-2xl mx-auto">
+    <div className="space-y-6 max-w-2xl mx-auto" dir={dir}>
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-4">
           <Link
             href="/dashboard/categories?tab=category-management"
             className={cn(
               buttonVariants({ variant: "ghost", size: "icon" }),
-              "h-9 w-9 text-zinc-600 dark:text-zinc-400 flex items-center justify-center",
+              "h-9 w-9 text-zinc-650 dark:text-zinc-400 flex items-center justify-center",
             )}
           >
-            <ArrowLeft className="h-5 w-5" />
+            <ArrowLeft className={cn("h-5 w-5", dir === "rtl" && "rotate-180")} />
           </Link>
           <div>
             <h1 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
-              Category details
+              {t("category_details")}
             </h1>
-            <p className="text-sm text-zinc-550 dark:text-zinc-400">
-              Detailed view of the product category
+            <p className="text-sm text-zinc-550 dark:text-zinc-400 text-left">
+              {t("detailed_view_desc", { defaultValue: "Detailed view of the product category" })}
             </p>
           </div>
         </div>
@@ -90,7 +80,7 @@ export function CategoryDetailScreen({ id }: CategoryDetailScreenProps) {
           )}
         >
           <Edit2 className="h-4 w-4" />
-          Edit Category
+          {t("edit_category")}
         </Link>
       </div>
 
@@ -112,7 +102,7 @@ export function CategoryDetailScreen({ id }: CategoryDetailScreenProps) {
         <CardHeader className="p-6">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">
+              <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50 text-left">
                 {category.title}
               </h2>
               {Array.isArray(category.brand) && category.brand.length > 0 && (
@@ -128,21 +118,20 @@ export function CategoryDetailScreen({ id }: CategoryDetailScreenProps) {
                 </div>
               )}
             </div>
-            <div className="flex items-center gap-1.5 text-xs text-zinc-500 dark:text-zinc-450 pt-1">
+            <div className="flex items-center gap-1.5 text-xs text-zinc-500 dark:text-zinc-450 pt-1 text-left">
               <Calendar className="h-3.5 w-3.5" />
-              <span>Created on {formattedDate}</span>
+              <span>{t("created_on")}: {new Date(category.createdAt).toLocaleDateString()}</span>
             </div>
           </div>
         </CardHeader>
 
         <CardContent className="p-6 pt-0 space-y-4">
           <div className="space-y-2">
-            <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-300">
-              Description
+            <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 text-left">
+              {t("description")}
             </h3>
-            <p className="text-sm text-zinc-600 dark:text-zinc-400 whitespace-pre-wrap leading-relaxed">
-              {category.description ||
-                "No description provided for this category."}
+            <p className="text-sm text-zinc-600 dark:text-zinc-400 whitespace-pre-wrap leading-relaxed text-left">
+              {category.description || t("no_description_provided", { defaultValue: "No description provided for this category." })}
             </p>
           </div>
         </CardContent>

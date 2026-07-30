@@ -1,128 +1,100 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { Lock, User, Eye, EyeOff } from "lucide-react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Spinner } from "@/components/ui/spinner";
-
-const loginFormSchema = z.object({
-  username: z.string().min(1, "Username is required"),
-  password: z.string().min(1, "Password is required"),
-});
-
-type LoginFormValues = z.infer<typeof loginFormSchema>;
+import { ThemeToggle } from "@/presentation/components/theme-toggle";
+import { useLoginViewModel } from "@/presentation/viewmodels/useLoginViewModel";
 
 export default function AuthPage() {
-  const router = useRouter();
-  const [showPassword, setShowPassword] = useState(false);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
-  } = useForm<LoginFormValues>({
-    resolver: zodResolver(loginFormSchema),
-    defaultValues: {
-      username: "",
-      password: "",
-    },
-  });
-
-  const onSubmit = async (data: LoginFormValues) => {
-    setErrorMessage(null);
-    try {
-      const response = await fetch("/api/auth", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        setErrorMessage(errorData.error || "Invalid username or password");
-        return;
-      }
-
-      router.push("/dashboard");
-      router.refresh();
-    } catch {
-      setErrorMessage("Connection error, please try again");
-    }
-  };
+    errors,
+    isSubmitting,
+    showPassword,
+    toggleShowPassword,
+    errorMessage,
+    getValidationError,
+    getFormErrorMessage,
+    t,
+    dir,
+  } = useLoginViewModel();
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 px-4 py-12">
+    <div dir={dir} className="relative flex min-h-screen items-center justify-center bg-zinc-50 dark:bg-zinc-950 px-4 py-12">
+      <div className="absolute top-4 right-4 flex items-center gap-2">
+        <ThemeToggle />
+      </div>
+
       <div className="w-full max-w-md space-y-4">
         <div className="text-center">
-          <h1 className="text-3xl font-bold tracking-tight text-zinc-900">
-            Welcome Back
+          <h1 className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
+            {t("welcome_back")}
           </h1>
-          <p className="mt-2 text-sm text-zinc-500">
-            Enter your credentials to access your account
+          <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
+            {t("credentials_desc")}
           </p>
         </div>
 
-        <Card className="border-zinc-200 bg-white shadow-lg">
+        <Card className="border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-lg">
           <CardHeader className="space-y-1">
-            <CardTitle className="text-center text-2xl text-zinc-900">Sign In</CardTitle>
-            <CardDescription className="text-center text-zinc-500">
-              Please enter your username and password
+            <CardTitle className="text-center text-2xl text-zinc-900 dark:text-zinc-50">
+              {t("sign_in")}
+            </CardTitle>
+            <CardDescription className="text-center text-zinc-500 dark:text-zinc-400">
+              {t("sign_in_desc")}
             </CardDescription>
           </CardHeader>
-          <form onSubmit={handleSubmit(onSubmit)}>
+          <form onSubmit={handleSubmit}>
             <CardContent className="space-y-4">
               {errorMessage && (
-                <div className="rounded-lg bg-red-50 p-3 text-center text-sm font-medium text-red-600 border border-red-100">
-                  {errorMessage}
+                <div className="rounded-lg bg-red-50 dark:bg-red-950/20 p-3 text-center text-sm font-medium text-red-600 dark:text-red-400 border border-red-100 dark:border-red-900/50">
+                  {getFormErrorMessage(errorMessage)}
                 </div>
               )}
 
               <div className="space-y-2">
-                <Label htmlFor="username" className="text-zinc-700">Username</Label>
+                <Label htmlFor="username" className="text-zinc-700 dark:text-zinc-350">{t("username")}</Label>
                 <div className="relative">
-                  <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-zinc-400">
+                  <span className={`absolute inset-y-0 ${dir === "rtl" ? "right-0 pr-3" : "left-0 pl-3"} flex items-center text-zinc-400`}>
                     <User className="h-5 w-5" />
                   </span>
                   <Input
                     id="username"
                     type="text"
-                    placeholder="hemn"
-                    className="pl-10 text-zinc-900 placeholder:text-zinc-400 border-zinc-200 focus-visible:ring-zinc-400"
+                    placeholder={t("username_placeholder")}
+                    className={`${dir === "rtl" ? "pr-10" : "pl-10"} text-zinc-900 dark:text-zinc-50 placeholder:text-zinc-400 dark:placeholder:text-zinc-650 border-zinc-200 dark:border-zinc-800 focus-visible:ring-zinc-400 bg-white dark:bg-zinc-950`}
                     disabled={isSubmitting}
                     {...register("username")}
                   />
                 </div>
                 {errors.username && (
-                  <p className="text-xs text-red-600">{errors.username.message}</p>
+                  <p className="text-xs text-red-650 dark:text-red-400">{getValidationError(errors.username.message)}</p>
                 )}
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password" className="text-zinc-700">Password</Label>
+                <Label htmlFor="password" className="text-zinc-700 dark:text-zinc-350">{t("password")}</Label>
                 <div className="relative">
-                  <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-zinc-400">
+                  <span className={`absolute inset-y-0 ${dir === "rtl" ? "right-0 pr-3" : "left-0 pl-3"} flex items-center text-zinc-400`}>
                     <Lock className="h-5 w-5" />
                   </span>
                   <Input
                     id="password"
                     type={showPassword ? "text" : "password"}
                     placeholder="••••••••"
-                    className="px-10 text-zinc-900 placeholder:text-zinc-400 border-zinc-200 focus-visible:ring-zinc-400"
+                    className={`${dir === "rtl" ? "px-10" : "px-10"} text-zinc-900 dark:text-zinc-50 placeholder:text-zinc-400 dark:placeholder:text-zinc-650 border-zinc-200 dark:border-zinc-800 focus-visible:ring-zinc-400 bg-white dark:bg-zinc-955`}
                     disabled={isSubmitting}
                     {...register("password")}
                   />
                   <button
                     type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute inset-y-0 right-0 flex items-center pr-3 text-zinc-400 hover:text-zinc-900"
+                    onClick={toggleShowPassword}
+                    className={`absolute inset-y-0 ${dir === "rtl" ? "left-0 pl-3" : "right-0 pr-3"} flex items-center text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-50`}
                   >
                     {showPassword ? (
                       <EyeOff className="h-5 w-5" />
@@ -132,23 +104,23 @@ export default function AuthPage() {
                   </button>
                 </div>
                 {errors.password && (
-                  <p className="text-xs text-red-600">{errors.password.message}</p>
+                  <p className="text-xs text-red-650 dark:text-red-400">{getValidationError(errors.password.message)}</p>
                 )}
               </div>
             </CardContent>
             <CardFooter>
               <Button
                 type="submit"
-                className="w-full bg-zinc-100 hover:bg-zinc-200 text-zinc-900 border border-zinc-200 font-semibold active:scale-[0.98] transition-all"
+                className="w-full bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-900 dark:text-zinc-50 border border-zinc-200 dark:border-zinc-800 font-semibold active:scale-[0.98] transition-all"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? (
                   <div className="flex items-center gap-2">
-                    <Spinner className="h-4 w-4 text-zinc-900" />
-                    <span>Please wait...</span>
+                    <Spinner className="h-4 w-4 text-zinc-900 dark:text-zinc-50" />
+                    <span>{t("please_wait")}</span>
                   </div>
                 ) : (
-                  "Sign In"
+                  t("sign_in")
                 )}
               </Button>
             </CardFooter>
@@ -158,3 +130,5 @@ export default function AuthPage() {
     </div>
   );
 }
+
+

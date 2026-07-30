@@ -20,8 +20,11 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
   SidebarTrigger,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
+
+import { useLanguage } from "./language-provider";
 
 export const menuItems = [
   {
@@ -60,8 +63,13 @@ export function DashboardSidebar() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const activeTab = searchParams.get("tab") || "product-management";
+  const { t, dir } = useLanguage();
+  const { isMobile, setOpenMobile } = useSidebar();
 
   const handleTabChange = (id: string) => {
+    if (isMobile) {
+      setOpenMobile(false);
+    }
     if (id === "category-management") {
       router.push(`/dashboard/categories?tab=category-management`);
     } else if (id === "product-management") {
@@ -94,13 +102,13 @@ export function DashboardSidebar() {
   };
 
   return (
-    <Sidebar side="left" className="border-r border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-550">
+    <Sidebar side={dir === "rtl" ? "right" : "left"} className="border-r border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-550">
       <SidebarHeader className="border-b border-zinc-200 dark:border-zinc-800 p-4 flex flex-row items-center justify-between">
         <div className="flex items-center gap-2">
           <div className="h-8 w-8 rounded-lg bg-zinc-900 dark:bg-zinc-100 flex items-center justify-center text-white dark:text-zinc-950 font-bold text-lg">
             S
           </div>
-          <span className="font-bold text-lg text-zinc-950 dark:text-zinc-50">Saed System</span>
+          <span className="font-bold text-lg text-zinc-950 dark:text-zinc-50">{t("system_title")}</span>
         </div>
         <SidebarTrigger className="text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900" />
       </SidebarHeader>
@@ -110,6 +118,7 @@ export function DashboardSidebar() {
           {menuItems.map((item) => {
             const Icon = item.icon;
             const isActive = activeTab === item.id;
+            const itemTitle = t(item.id.replace(/-/g, "_"));
 
             return (
               <SidebarMenuItem key={item.id}>
@@ -123,7 +132,7 @@ export function DashboardSidebar() {
                   }`}
                 >
                   <Icon className={`h-5 w-5 ${isActive ? "text-zinc-900 dark:text-zinc-50" : "text-zinc-400 dark:text-zinc-500"}`} />
-                  <span className="text-sm font-medium">{item.title}</span>
+                  <span className="text-sm font-medium">{itemTitle}</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             );
@@ -138,9 +147,10 @@ export function DashboardSidebar() {
           className="w-full flex items-center gap-3 justify-start text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 hover:text-red-700 dark:hover:text-red-350 py-2.5 px-3 rounded-lg"
         >
           <LogOut className="h-5 w-5" />
-          <span className="text-sm font-medium">Logout</span>
+          <span className="text-sm font-medium">{t("logout")}</span>
         </Button>
       </SidebarFooter>
     </Sidebar>
   );
 }
+

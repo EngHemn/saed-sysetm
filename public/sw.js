@@ -58,7 +58,10 @@ self.addEventListener("fetch", (event) => {
   if (url.origin !== self.location.origin) return;
 
   // 1. Navigation requests (HTML pages) -> Network-First with Cache & Offline Fallback
-  if (request.mode === "navigate") {
+  const isNavigation = request.mode === "navigate" || 
+    (request.method === "GET" && request.headers.get("accept")?.includes("text/html"));
+
+  if (isNavigation) {
     event.respondWith(
       fetch(request)
         .then((response) => {

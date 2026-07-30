@@ -7,11 +7,15 @@ import { Card, CardContent } from "@/components/ui/card";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { ThemeToggle } from "@/presentation/components/theme-toggle";
 
+import { useLanguage } from "@/presentation/components/language-provider";
+import { DashboardHeader } from "@/presentation/components/DashboardHeader";
+
 function DashboardContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const activeTab = searchParams.get("tab") || "product-management";
   const activeItem = menuItems.find((item) => item.id === activeTab) || menuItems[0];
+  const { t, dir } = useLanguage();
 
   React.useEffect(() => {
     if (activeTab === "category-management") {
@@ -27,17 +31,11 @@ function DashboardContent() {
     }
   }, [activeTab, router]);
 
+  const activeTitle = t(activeItem.id.replace(/-/g, "_"));
+
   return (
-    <div className="flex-1 flex flex-col h-full overflow-hidden bg-zinc-50 dark:bg-zinc-900/40">
-      <header className="flex h-16 shrink-0 items-center justify-between gap-2 border-b border-zinc-200 dark:border-zinc-800 px-6 bg-white dark:bg-zinc-950 shadow-xs">
-        <div className="flex items-center gap-3">
-          <SidebarTrigger className="md:hidden text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900" />
-          <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-50">
-            {activeItem.title}
-          </h2>
-        </div>
-        <ThemeToggle />
-      </header>
+    <div dir={dir} className="flex-1 flex flex-col h-full overflow-hidden bg-zinc-50 dark:bg-zinc-900/40">
+      <DashboardHeader title={activeTitle} />
 
       <main className="flex-1 p-6 md:p-8 overflow-y-auto">
         <div className="max-w-4xl mx-auto h-full flex items-center justify-center">
@@ -48,10 +46,10 @@ function DashboardContent() {
               </div>
               <div className="space-y-2">
                 <h3 className="text-xl font-bold text-zinc-900 dark:text-zinc-50">
-                  {activeItem.title}
+                  {activeTitle}
                 </h3>
                 <p className="text-sm text-zinc-500 dark:text-zinc-400 max-w-sm mx-auto">
-                  This page currently does not have any content. Navigate using the options in the left sidebar.
+                  {t("no_content_desc")}
                 </p>
               </div>
             </CardContent>
@@ -63,10 +61,11 @@ function DashboardContent() {
 }
 
 export default function DashboardPage() {
+  const { t } = useLanguage();
   return (
     <Suspense fallback={
       <div className="flex-1 flex items-center justify-center bg-zinc-50 dark:bg-zinc-900/40">
-        <div className="animate-pulse text-lg text-zinc-500 dark:text-zinc-400">Loading...</div>
+        <div className="animate-pulse text-lg text-zinc-500 dark:text-zinc-400">{t("loading")}</div>
       </div>
     }>
       <DashboardContent />

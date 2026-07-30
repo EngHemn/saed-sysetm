@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -8,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { useLanguage } from "./language-provider";
 
 interface CompanyFormProps {
   initialValues?: Partial<CompanyInput>;
@@ -19,6 +22,7 @@ interface CompanyFormProps {
 export function CompanyForm({ initialValues, onSubmit, onCancel, isSubmitting }: CompanyFormProps) {
   const [uploadingImage, setUploadingImage] = useState(false);
   const [imageError, setImageError] = useState<string | null>(null);
+  const { t, dir } = useLanguage();
 
   const {
     register,
@@ -77,70 +81,77 @@ export function CompanyForm({ initialValues, onSubmit, onCancel, isSubmitting }:
     setValue("image", "", { shouldValidate: true });
   };
 
+  const getValidationError = (message: string | undefined) => {
+    if (!message) return undefined;
+    if (message === "Company name is required") return t("company_name_required");
+    if (message === "Phone number is required") return t("phone_required");
+    return t(message);
+  };
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" dir={dir}>
       <div className="space-y-2">
-        <Label htmlFor="company-name" className="text-zinc-900 dark:text-zinc-300">
-          Company Name <span className="text-red-500">*</span>
+        <Label htmlFor="company-name" className="text-zinc-900 dark:text-zinc-300 text-left block">
+          {t("company_name", { defaultValue: "Company Name" })} <span className="text-red-500">*</span>
         </Label>
         <Input
           id="company-name"
-          placeholder="e.g. Acme Corporation"
+          placeholder={t("company_name", { defaultValue: "Company Name" })}
           {...register("name")}
-          className="bg-zinc-50 dark:bg-zinc-900/30 border-zinc-200 dark:border-zinc-800"
+          className="bg-zinc-50 dark:bg-zinc-900/30 border-zinc-200 dark:border-zinc-800 text-left animate-none"
         />
         {errors.name && (
-          <p className="text-xs font-medium text-red-555 dark:text-red-400">
-            {errors.name.message}
+          <p className="text-xs font-medium text-red-555 dark:text-red-400 text-left animate-none">
+            {getValidationError(errors.name.message)}
           </p>
         )}
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="company-phone" className="text-zinc-900 dark:text-zinc-300">
-          Phone Number <span className="text-red-500">*</span>
+        <Label htmlFor="company-phone" className="text-zinc-900 dark:text-zinc-300 text-left block">
+          {t("phone", { defaultValue: "Phone Number" })} <span className="text-red-500">*</span>
         </Label>
         <Input
           id="company-phone"
-          placeholder="e.g. +1 555-0199"
+          placeholder={t("phone", { defaultValue: "Phone Number" })}
           {...register("phone")}
-          className="bg-zinc-50 dark:bg-zinc-900/30 border-zinc-200 dark:border-zinc-800"
+          className="bg-zinc-50 dark:bg-zinc-900/30 border-zinc-200 dark:border-zinc-800 text-left animate-none"
         />
         {errors.phone && (
-          <p className="text-xs font-medium text-red-555 dark:text-red-400">
-            {errors.phone.message}
+          <p className="text-xs font-medium text-red-555 dark:text-red-400 text-left animate-none">
+            {getValidationError(errors.phone.message)}
           </p>
         )}
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="company-address" className="text-zinc-900 dark:text-zinc-300">
-          Address (Optional)
+        <Label htmlFor="company-address" className="text-zinc-900 dark:text-zinc-300 text-left block">
+          {t("address", { defaultValue: "Address" })}
         </Label>
         <Input
           id="company-address"
-          placeholder="e.g. 123 Main Street"
+          placeholder={t("address", { defaultValue: "Address" })}
           {...register("address")}
-          className="bg-zinc-50 dark:bg-zinc-900/30 border-zinc-200 dark:border-zinc-800"
+          className="bg-zinc-50 dark:bg-zinc-900/30 border-zinc-200 dark:border-zinc-800 text-left animate-none"
         />
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="company-note" className="text-zinc-900 dark:text-zinc-300">
-          Note (Optional)
+        <Label htmlFor="company-note" className="text-zinc-900 dark:text-zinc-300 text-left block">
+          {t("note")}
         </Label>
         <Textarea
           id="company-note"
-          placeholder="Additional information..."
+          placeholder={t("note")}
           rows={3}
           {...register("note")}
-          className="bg-zinc-50 dark:bg-zinc-900/30 border-zinc-200 dark:border-zinc-800 resize-none"
+          className="bg-zinc-50 dark:bg-zinc-900/30 border-zinc-200 dark:border-zinc-800 resize-none text-left animate-none"
         />
       </div>
 
       <div className="space-y-2">
-        <Label className="text-zinc-900 dark:text-zinc-300">
-          Company Logo / Image (Optional)
+        <Label className="text-zinc-900 dark:text-zinc-300 text-left block">
+          {t("image")}
         </Label>
         {imageUrl ? (
           <div className="relative h-40 w-full rounded-lg border border-zinc-200 dark:border-zinc-800 overflow-hidden bg-zinc-50 dark:bg-zinc-900 flex items-center justify-center">
@@ -181,25 +192,25 @@ export function CompanyForm({ initialValues, onSubmit, onCancel, isSubmitting }:
                 <Upload className="h-6 w-6 text-zinc-400" />
               )}
               <span className="text-xs font-medium text-zinc-700 dark:text-zinc-300">
-                {uploadingImage ? "Uploading..." : "Upload logo"}
+                {uploadingImage ? t("uploading_image", { defaultValue: "Uploading..." }) : t("upload_image", { defaultValue: "Upload logo" })}
               </span>
             </label>
           </div>
         )}
         {imageError && (
-          <p className="text-xs font-medium text-red-555 dark:text-red-400">
+          <p className="text-xs font-medium text-red-555 dark:text-red-400 text-left animate-none">
             {imageError}
           </p>
         )}
       </div>
 
-      <div className="flex items-center justify-end gap-3 pt-4 border-t border-zinc-100 dark:border-zinc-900">
+      <div className={`flex items-center ${dir === "rtl" ? "justify-start" : "justify-end"} gap-3 pt-4 border-t border-zinc-150 dark:border-zinc-900`}>
         <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting}>
-          Cancel
+          {t("cancel")}
         </Button>
         <Button type="submit" disabled={isSubmitting || uploadingImage}>
           {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Save
+          {t("save")}
         </Button>
       </div>
     </form>

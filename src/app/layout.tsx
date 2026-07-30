@@ -57,15 +57,21 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 };
 
-export default function RootLayout({
+import { cookies } from "next/headers";
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const cookieStore = await cookies();
+  const lang = (cookieStore.get("app_lang")?.value || "en") as "en" | "ku";
+  const dir = lang === "ku" ? "rtl" : "ltr";
+
   return (
     <html
-      lang="en"
-      dir="ltr"
+      lang={lang}
+      dir={dir}
       className="h-full scroll-smooth"
       suppressHydrationWarning
     >
@@ -76,7 +82,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <Providers>
+          <Providers lang={lang}>
             {children}
             <PwaRegister />
             <PwaInstallPrompt />
