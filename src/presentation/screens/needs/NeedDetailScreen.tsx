@@ -17,10 +17,10 @@ interface NeedDetailScreenProps {
 
 function ProductLinkCard({ productId }: { productId: string }) {
   const { product, isLoading } = useProduct(productId);
-  const { t, dir, language } = useLanguage();
+  const { t, dir, language, formatCurrency } = useLanguage();
 
   if (isLoading) {
-    return <Loader2 className="h-6 w-6 animate-spin text-zinc-550 shrink-0" />;
+    return <Loader2 className="h-6 w-6 animate-spin text-zinc-555 shrink-0" />;
   }
 
   if (!product) return null;
@@ -47,11 +47,11 @@ function ProductLinkCard({ productId }: { productId: string }) {
         )}
         <div className="space-y-1 text-start">
           <h4 className="font-bold text-zinc-900 dark:text-zinc-50">{getLocalizedValue(product.title, language)}</h4>
-          <p className="text-xs text-zinc-550 dark:text-zinc-400">
+          <p className="text-xs text-zinc-555 dark:text-zinc-400">
             {t("category")}: {product.category?.title || "Uncategorized"} | {t("brand")}: {product.brand || "—"}
           </p>
           <p className="text-xs font-semibold text-zinc-900 dark:text-zinc-50">
-            {t("stock", { defaultValue: "Current Stock" })}: {product.stock} | {t("price", { defaultValue: "Price" })}: ${product.finalPrice.toFixed(2)}
+            {t("stock", { defaultValue: "Current Stock" })}: {product.stock} | {t("price", { defaultValue: "Price" })}: {formatCurrency(product.finalPrice)}
           </p>
         </div>
       </CardContent>

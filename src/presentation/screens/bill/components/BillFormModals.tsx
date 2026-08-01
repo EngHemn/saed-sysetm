@@ -14,6 +14,7 @@ import { CompanyForm } from "@/presentation/components/CompanyForm";
 import { ProductForm } from "@/presentation/components/ProductForm";
 import { getLocalizedValue } from "@/lib/utils";
 import { Product } from "@/domain/entities/Product";
+import { useLanguage } from "@/presentation/components/language-provider";
 
 interface BillFormModalsProps {
   dialogItem: any | null;
@@ -48,6 +49,7 @@ export function BillFormModals({
   language,
   t,
 }: BillFormModalsProps) {
+  const { formatCurrency } = useLanguage();
   return (
     <>
       <Dialog
@@ -107,7 +109,7 @@ export function BillFormModals({
                     {t("purchase_price")}
                   </span>
                   <span className="font-bold text-emerald-600">
-                    ${dialogItem.initialPrice.toFixed(2)}
+                    {formatCurrency(dialogItem.initialPrice)}
                   </span>
                 </div>
                 <div>
@@ -115,7 +117,7 @@ export function BillFormModals({
                     {t("middle_price")}
                   </span>
                   <span className="font-bold text-zinc-700 dark:text-zinc-300">
-                    ${dialogItem.middlePrice.toFixed(2)}
+                    {formatCurrency(dialogItem.middlePrice)}
                   </span>
                 </div>
                 <div>
@@ -123,7 +125,7 @@ export function BillFormModals({
                     {t("final_price")}
                   </span>
                   <span className="font-bold text-zinc-900 dark:text-zinc-50">
-                    ${dialogItem.finalPrice.toFixed(2)}
+                    {formatCurrency(dialogItem.finalPrice)}
                   </span>
                 </div>
               </div>

@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { Bill } from "@/domain/entities/Bill";
+import { useLanguage } from "@/presentation/components/language-provider";
 
 interface BillListTableProps {
   bills: Bill[];
@@ -52,6 +53,7 @@ export function BillListTable({
   dir,
   t,
 }: BillListTableProps) {
+  const { formatCurrency } = useLanguage();
   const renderSortHeader = (field: string, label: string, className?: string) => {
     const isSorted = sortBy === field;
     return (
@@ -105,9 +107,9 @@ export function BillListTable({
           <TableRow key={bill.id} className="border-zinc-200 dark:border-zinc-800 hover:bg-zinc-50/50 dark:hover:bg-zinc-900/10 transition-colors">
             <TableCell className={`font-medium text-zinc-850 dark:text-zinc-200 ${dir === "rtl" ? "text-right" : "text-left"}`}>{bill.customerName}</TableCell>
             <TableCell className={`text-zinc-600 dark:text-zinc-400 text-sm ${dir === "rtl" ? "text-right" : "text-left"}`}>{bill.phone}</TableCell>
-            <TableCell className={`font-bold text-zinc-900 dark:text-zinc-50 ${dir === "rtl" ? "text-left" : "text-right"}`}>${bill.totalAmount.toFixed(2)}</TableCell>
-            <TableCell className={`font-medium text-emerald-600 dark:text-emerald-400 ${dir === "rtl" ? "text-left" : "text-right"}`}>${bill.paidAmount.toFixed(2)}</TableCell>
-            <TableCell className={`font-medium text-amber-600 dark:text-amber-400 ${dir === "rtl" ? "text-left" : "text-right"}`}>${bill.remainingAmount.toFixed(2)}</TableCell>
+            <TableCell className={`font-bold text-zinc-900 dark:text-zinc-50 ${dir === "rtl" ? "text-left" : "text-right"}`}>{formatCurrency(bill.totalAmount)}</TableCell>
+            <TableCell className={`font-medium text-emerald-600 dark:text-emerald-400 ${dir === "rtl" ? "text-left" : "text-right"}`}>{formatCurrency(bill.paidAmount)}</TableCell>
+            <TableCell className={`font-medium text-amber-600 dark:text-amber-400 ${dir === "rtl" ? "text-left" : "text-right"}`}>{formatCurrency(bill.remainingAmount)}</TableCell>
             <TableCell className="text-center">
               {bill.paymentStatus === "Paid" ? (
                 <TooltipProvider>

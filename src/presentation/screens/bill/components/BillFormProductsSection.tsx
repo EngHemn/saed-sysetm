@@ -13,6 +13,7 @@ import { Product } from "@/domain/entities/Product";
 import { BillInput } from "@/domain/schemas/bill";
 import { BillFormProductCombobox } from "./BillFormProductCombobox";
 import { BillFormItemsTable } from "./BillFormItemsTable";
+import { useLanguage } from "@/presentation/components/language-provider";
 
 interface BillFormProductsSectionProps {
   comboboxRef: React.RefObject<HTMLDivElement | null>;
@@ -79,8 +80,9 @@ export function BillFormProductsSection({
   language,
   t,
 }: BillFormProductsSectionProps) {
+  const { formatCurrency } = useLanguage();
   return (
-    <Card className="border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-sm">
+    <Card className="border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-955 shadow-sm">
       <CardHeader>
         <CardTitle className="text-lg font-semibold text-zinc-900 dark:text-zinc-50 text-left">
           {t("bill_products_items", {
@@ -134,11 +136,11 @@ export function BillFormProductsSection({
 
             <div className="sm:col-span-3 space-y-1.5">
               <Label className="text-xs text-zinc-650 dark:text-zinc-400 text-left block">
-                {t("purchase_price")} ($)
+                {t("purchase_price")} ({t("currency")})
               </Label>
               <Input
                 type="number"
-                step="0.01"
+                step="1"
                 min="0"
                 value={productUnitPrice}
                 onChange={(e) =>
@@ -161,8 +163,7 @@ export function BillFormProductsSection({
                   :
                 </span>
                 <Badge variant="outline" className="text-xs font-semibold">
-                  {getLocalizedValue(selectedProduct.title, language)} ($
-                  {selectedProduct.initPrice.toFixed(2)})
+                  {getLocalizedValue(selectedProduct.title, language)} ({formatCurrency(selectedProduct.initPrice)})
                 </Badge>
                 <Button
                   type="button"

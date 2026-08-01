@@ -3,7 +3,7 @@ import { useBills, useBill } from "@/presentation/hooks/useBills";
 import { useLanguage } from "@/presentation/components/language-provider";
 
 export function useBillsViewModel() {
-  const { t, dir } = useLanguage();
+  const { t, dir, formatCurrency } = useLanguage();
   const [viewMode, setViewMode] = useState<"list" | "card">("list");
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
@@ -86,13 +86,13 @@ export function useBillsViewModel() {
     if (!partialTargetBill) return;
     const amount = parseFloat(partialPaidInput);
     if (isNaN(amount) || amount <= 0) {
-      setPartialError(t("paid_amount_min", { defaultValue: "Paid amount must be greater than $0.00" }));
+      setPartialError(t("paid_amount_min", { defaultValue: `Paid amount must be greater than ${formatCurrency(0)}` }));
       return;
     }
     if (amount >= partialTargetBill.totalAmount) {
       setPartialError(
         t("paid_amount_max", {
-          defaultValue: `Paid amount must be less than total bill amount ($${partialTargetBill.totalAmount.toFixed(2)})`,
+          defaultValue: `Paid amount must be less than total bill amount (${formatCurrency(partialTargetBill.totalAmount)})`,
         })
       );
       return;

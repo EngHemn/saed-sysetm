@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { BillInput } from "@/domain/schemas/bill";
+import { useLanguage } from "@/presentation/components/language-provider";
 
 interface BillFormSummarySectionProps {
   register: UseFormRegister<BillInput>;
@@ -39,6 +40,7 @@ export function BillFormSummarySection({
   dir,
   t,
 }: BillFormSummarySectionProps) {
+  const { formatCurrency } = useLanguage();
   return (
     <Card className="border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-955 shadow-sm">
       <CardHeader>
@@ -55,12 +57,12 @@ export function BillFormSummarySection({
               htmlFor="paidAmount"
               className="text-zinc-900 dark:text-zinc-300 text-left block"
             >
-              {t("paid_amount")} ($) <span className="text-red-500">*</span>
+              {t("paid_amount")} ({t("currency")}) <span className="text-red-500">*</span>
             </Label>
             <Input
               id="paidAmount"
               type="number"
-              step="0.01"
+              step="1"
               min="0"
               {...register("paidAmount", { valueAsNumber: true })}
               className="bg-zinc-50 dark:bg-zinc-900/30 border-zinc-200 dark:border-zinc-800 font-semibold text-left animate-none"
@@ -74,19 +76,19 @@ export function BillFormSummarySection({
 
           <div className="space-y-2">
             <Label className="text-zinc-900 dark:text-zinc-300 text-left block">
-              {t("total_amount")} ($)
+              {t("total_amount")} ({t("currency")})
             </Label>
             <div className="h-10 px-3 flex items-center rounded-md bg-zinc-100 dark:bg-zinc-900 font-bold text-zinc-900 dark:text-zinc-50">
-              ${totalAmount.toFixed(2)}
+              {formatCurrency(totalAmount)}
             </div>
           </div>
 
           <div className="space-y-2">
             <Label className="text-zinc-900 dark:text-zinc-300 text-left block">
-              {t("remaining_amount")} ($)
+              {t("remaining_amount")} ({t("currency")})
             </Label>
             <div className="h-10 px-3 flex items-center rounded-md bg-zinc-100 dark:bg-zinc-900 font-bold text-amber-600 dark:text-amber-400">
-              ${remainingAmount.toFixed(2)}
+              {formatCurrency(remainingAmount)}
             </div>
           </div>
         </div>

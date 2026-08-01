@@ -13,6 +13,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { useCompanyDetailsViewModel } from "@/presentation/viewmodels/useCompanyDetailsViewModel";
+import { useLanguage } from "@/presentation/components/language-provider";
 
 interface CompanyDetailScreenProps {
   id: string;
@@ -20,6 +21,7 @@ interface CompanyDetailScreenProps {
 }
 
 export function CompanyDetailScreen({ id, onBack }: CompanyDetailScreenProps) {
+  const { formatCurrency } = useLanguage();
   const {
     company,
     isLoading,
@@ -118,11 +120,11 @@ export function CompanyDetailScreen({ id, onBack }: CompanyDetailScreenProps) {
       </Card>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <Card className="border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-4 shadow-xs">
+        <Card className="border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-955 p-4 shadow-xs">
           <div className="space-y-1">
             <span className="text-[10px] font-bold text-zinc-455 uppercase block text-left">{t("total_invoiced")}</span>
             <span className="text-lg font-extrabold text-blue-600 dark:text-blue-400 block text-left">
-              ${totalInvoiced.toFixed(2)}
+              {formatCurrency(totalInvoiced)}
             </span>
           </div>
         </Card>
@@ -130,7 +132,7 @@ export function CompanyDetailScreen({ id, onBack }: CompanyDetailScreenProps) {
           <div className="space-y-1">
             <span className="text-[10px] font-bold text-zinc-455 uppercase block text-left">{t("total_paid")}</span>
             <span className="text-lg font-extrabold text-emerald-600 dark:text-emerald-400 block text-left">
-              ${totalPaid.toFixed(2)}
+              {formatCurrency(totalPaid)}
             </span>
           </div>
         </Card>
@@ -138,7 +140,7 @@ export function CompanyDetailScreen({ id, onBack }: CompanyDetailScreenProps) {
           <div className="space-y-1">
             <span className="text-[10px] font-bold text-zinc-455 uppercase block text-left">{t("total_remaining")}</span>
             <span className="text-lg font-extrabold text-rose-600 dark:text-rose-400 block text-left">
-              ${totalRemaining.toFixed(2)}
+              {formatCurrency(totalRemaining)}
             </span>
           </div>
         </Card>
@@ -185,13 +187,13 @@ export function CompanyDetailScreen({ id, onBack }: CompanyDetailScreenProps) {
                       </div>
                     </TableCell>
                     <TableCell className={`font-medium text-zinc-650 dark:text-zinc-300 ${dir === "rtl" ? "text-left" : "text-right"}`}>
-                      ${bill.totalAmount.toFixed(2)}
+                      {formatCurrency(bill.totalAmount)}
                     </TableCell>
                     <TableCell className={`font-medium text-emerald-650 dark:text-emerald-400 ${dir === "rtl" ? "text-left" : "text-right"}`}>
-                      ${bill.paidAmount.toFixed(2)}
+                      {formatCurrency(bill.paidAmount)}
                     </TableCell>
                     <TableCell className={`font-bold text-zinc-900 dark:text-zinc-100 ${dir === "rtl" ? "text-left" : "text-right"}`}>
-                      ${bill.remainingAmount.toFixed(2)}
+                      {formatCurrency(bill.remainingAmount)}
                     </TableCell>
                     <TableCell className={`${dir === "rtl" ? "text-right" : "text-left"}`}>
                       <Badge

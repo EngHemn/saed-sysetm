@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/tooltip";
 import { cn, getLocalizedValue } from "@/lib/utils";
 import { Product } from "@/domain/entities/Product";
+import { useLanguage } from "@/presentation/components/language-provider";
 
 interface ProductListTableProps {
   products: Product[];
@@ -49,6 +50,7 @@ export function ProductListTable({
   language,
   t,
 }: ProductListTableProps) {
+  const { formatCurrency } = useLanguage();
   const renderSortHeader = (field: string, label: string, className?: string) => {
     const isSorted = sortBy === field;
     return (
@@ -97,8 +99,8 @@ export function ProductListTable({
                   {product.brand && <span className="text-xs text-zinc-450 dark:text-zinc-500">{t("brand")}: {product.brand}</span>}
                 </div>
               </TableCell>
-              <TableCell className="text-right font-medium text-zinc-600 dark:text-zinc-400">${product.middlePrice.toFixed(2)}</TableCell>
-              <TableCell className="text-right font-bold text-zinc-900 dark:text-zinc-50">${product.finalPrice.toFixed(2)}</TableCell>
+              <TableCell className="text-right font-medium text-zinc-600 dark:text-zinc-400">{formatCurrency(product.middlePrice)}</TableCell>
+              <TableCell className="text-right font-bold text-zinc-900 dark:text-zinc-50">{formatCurrency(product.finalPrice)}</TableCell>
               <TableCell className="text-right">
                 <div className="flex justify-end items-center gap-1">
                   <TooltipProvider>

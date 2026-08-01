@@ -12,6 +12,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Bill } from "@/domain/entities/Bill";
+import { useLanguage } from "@/presentation/components/language-provider";
 
 interface BillPartialPaymentDialogProps {
   partialTargetBill: any | null;
@@ -38,6 +39,7 @@ export function BillPartialPaymentDialog({
   dir,
   t,
 }: BillPartialPaymentDialogProps) {
+  const { formatCurrency } = useLanguage();
   return (
     <Dialog
       open={!!partialTargetBill}
@@ -71,26 +73,26 @@ export function BillPartialPaymentDialog({
                 {t("total_amount")}:
               </span>
               <span className="font-bold text-zinc-900 dark:text-zinc-50">
-                ${partialTargetBill.totalAmount.toFixed(2)}
+                {formatCurrency(partialTargetBill.totalAmount)}
               </span>
             </div>
 
             <div className="space-y-2">
               <label className="text-xs font-semibold text-zinc-700 dark:text-zinc-300 text-left block">
-                {t("paid_amount")} ($)
+                {t("paid_amount")} ({t("currency")})
               </label>
               <Input
                 type="number"
-                step="0.01"
-                min="0.01"
-                max={partialTargetBill.totalAmount - 0.01}
+                step="1"
+                min="1"
+                max={partialTargetBill.totalAmount - 1}
                 value={partialPaidInput}
                 onChange={(e) => {
                   setPartialPaidInput(e.target.value);
                   setPartialError(null);
                 }}
-                placeholder="0.00"
-                className="bg-white dark:bg-zinc-950 border-zinc-300 dark:border-zinc-700 text-left"
+                placeholder="0"
+                className="bg-white dark:bg-zinc-955 border-zinc-300 dark:border-zinc-700 text-left"
               />
               {partialError && (
                 <p className="text-xs text-red-655 dark:text-red-400 font-medium text-left">
@@ -108,7 +110,7 @@ export function BillPartialPaymentDialog({
               return (
                 <div className="flex justify-between items-center text-xs p-2.5 rounded-lg bg-amber-50 dark:bg-amber-955/20 border border-amber-200 dark:border-amber-900/40 text-amber-800 dark:text-amber-300">
                   <span>{t("remaining_amount")}:</span>
-                  <span className="font-bold">${remaining.toFixed(2)}</span>
+                  <span className="font-bold">{formatCurrency(remaining)}</span>
                 </div>
               );
             })()}

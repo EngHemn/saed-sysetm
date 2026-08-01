@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/tooltip";
 import { cn, getLocalizedValue } from "@/lib/utils";
 import { Product } from "@/domain/entities/Product";
+import { useLanguage } from "@/presentation/components/language-provider";
 
 interface NeedListAlertedProductsProps {
   products: Product[];
@@ -40,6 +41,7 @@ export function NeedListAlertedProducts({
   language,
   t,
 }: NeedListAlertedProductsProps) {
+  const { formatCurrency } = useLanguage();
   if (products.length === 0) {
     return (
       <Card className="border-dashed border-2 border-zinc-200 dark:border-zinc-800 bg-white/60 dark:bg-zinc-955/40 py-12 px-6 text-center rounded-xl">
@@ -98,8 +100,8 @@ export function NeedListAlertedProducts({
                     {product.brand && <span className="text-[10px] text-zinc-400 dark:text-zinc-550">{product.brand}</span>}
                   </div>
                 </TableCell>
-                <TableCell className="text-zinc-600 dark:text-zinc-450 font-medium text-end">${product.middlePrice.toFixed(2)}</TableCell>
-                <TableCell className="font-bold text-zinc-955 dark:text-zinc-50 text-end">${product.finalPrice.toFixed(2)}</TableCell>
+                <TableCell className="text-zinc-600 dark:text-zinc-455 font-medium text-end">{formatCurrency(product.middlePrice)}</TableCell>
+                <TableCell className="font-bold text-zinc-955 dark:text-zinc-50 text-end">{formatCurrency(product.finalPrice)}</TableCell>
                 <TableCell className="text-end">
                   <div className="flex justify-end items-center gap-1">
                     <TooltipProvider>
@@ -135,11 +137,11 @@ export function NeedListAlertedProducts({
                   <div className="flex justify-between items-center pt-1 border-t border-zinc-100 dark:border-zinc-900 text-start">
                     <div className="flex flex-col text-start">
                       <span className="text-[8px] text-zinc-400 dark:text-zinc-550 uppercase">{t("middle_price")}</span>
-                      <span className="text-xs font-semibold text-zinc-650 dark:text-zinc-400">${product.middlePrice.toFixed(2)}</span>
+                      <span className="text-xs font-semibold text-zinc-650 dark:text-zinc-400">{formatCurrency(product.middlePrice)}</span>
                     </div>
                     <div className="flex flex-col items-end text-start">
                       <span className="text-[8px] text-zinc-400 dark:text-zinc-550 uppercase">{t("final_price")}</span>
-                      <span className="text-xs font-bold text-zinc-950 dark:text-zinc-50">${product.finalPrice.toFixed(2)}</span>
+                      <span className="text-xs font-bold text-zinc-950 dark:text-zinc-50">{formatCurrency(product.finalPrice)}</span>
                     </div>
                   </div>
                 </div>

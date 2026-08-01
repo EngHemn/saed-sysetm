@@ -11,6 +11,7 @@ interface LanguageContextType {
   dir: "ltr" | "rtl";
   setLanguage: (lang: Language) => void;
   t: (key: string, values?: Record<string, string | number>) => string;
+  formatCurrency: (amount: number) => string;
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(
@@ -80,8 +81,19 @@ export function LanguageProvider({
     return translation;
   };
 
+  const formatCurrency = (amount: number) => {
+    if (amount === undefined || amount === null || isNaN(amount)) {
+      return language === "ku" ? "0 د.ع" : "0 IQD";
+    }
+    const formatted = amount.toLocaleString("en-US", {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2,
+    });
+    return language === "ku" ? `${formatted} د.ع` : `${formatted} IQD`;
+  };
+
   return (
-    <LanguageContext.Provider value={{ language, dir, setLanguage, t }}>
+    <LanguageContext.Provider value={{ language, dir, setLanguage, t, formatCurrency }}>
       {children}
     </LanguageContext.Provider>
   );

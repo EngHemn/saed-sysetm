@@ -4,6 +4,7 @@ import React from "react";
 import { Eye } from "lucide-react";
 import { BillItem } from "@/domain/entities/Bill";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useLanguage } from "@/presentation/components/language-provider";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -33,6 +34,7 @@ export function BillDetailItemsTable({
   dir,
   t,
 }: BillDetailItemsTableProps) {
+  const { formatCurrency } = useLanguage();
   return (
     <Card className="border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-sm">
       <CardHeader>
@@ -97,14 +99,14 @@ export function BillDetailItemsTable({
                       dir === "rtl" ? "text-left" : "text-right"
                     }`}
                   >
-                    ${item.unitPrice.toFixed(2)}
+                    {formatCurrency(item.unitPrice)}
                   </TableCell>
                   <TableCell
                     className={`font-bold text-zinc-900 dark:text-zinc-50 ${
                       dir === "rtl" ? "text-left" : "text-right"
                     }`}
                   >
-                    ${item.totalPrice.toFixed(2)}
+                    {formatCurrency(item.totalPrice)}
                   </TableCell>
                   <TableCell className={`${dir === "rtl" ? "text-left" : "text-right"}`}>
                     <TooltipProvider>

@@ -10,12 +10,14 @@ import { Badge } from "@/components/ui/badge";
 import { cn, getLocalizedValue } from "@/lib/utils";
 import Image from "next/image";
 import { useProductDetailsViewModel } from "@/presentation/viewmodels/useProductDetailsViewModel";
+import { useLanguage } from "@/presentation/components/language-provider";
 
 interface ProductDetailScreenProps {
   id: string;
 }
 
 export function ProductDetailScreen({ id }: ProductDetailScreenProps) {
+  const { formatCurrency } = useLanguage();
   const { product, isLoading, error, infoList, t, dir, language } =
     useProductDetailsViewModel(id);
 
@@ -141,7 +143,7 @@ export function ProductDetailScreen({ id }: ProductDetailScreenProps) {
                 {t("purchase_price")}
               </span>
               <span className="text-lg font-medium text-zinc-600 dark:text-zinc-400">
-                ${product.initPrice.toFixed(2)}
+                {formatCurrency(product.initPrice)}
               </span>
             </div>
             <div className="space-y-1">
@@ -149,7 +151,7 @@ export function ProductDetailScreen({ id }: ProductDetailScreenProps) {
                 {t("middle_price")}
               </span>
               <span className="text-lg font-medium text-zinc-600 dark:text-zinc-400">
-                ${product.middlePrice.toFixed(2)}
+                {formatCurrency(product.middlePrice)}
               </span>
             </div>
             <div className="space-y-1">
@@ -157,7 +159,7 @@ export function ProductDetailScreen({ id }: ProductDetailScreenProps) {
                 {t("final_price")}
               </span>
               <span className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">
-                ${product.finalPrice.toFixed(2)}
+                {formatCurrency(product.finalPrice)}
               </span>
             </div>
           </div>

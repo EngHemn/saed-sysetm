@@ -22,13 +22,10 @@ export function NeedListHeader({ activeTab, t }: NeedListHeaderProps) {
           </span>
         </div>
         <h1 className="text-2xl font-extrabold tracking-tight text-zinc-955 dark:text-zinc-550 bg-gradient-to-r from-zinc-900 to-zinc-600 dark:from-zinc-50 dark:to-zinc-400 bg-clip-text text-transparent text-start">
-          {t("need_management")}
+          {t("needs_management")}
         </h1>
         <p className="text-xs text-zinc-550 dark:text-zinc-400 mt-1 text-start">
-          {t("need_management_desc", {
-            defaultValue:
-              "Optimize your inventory by managing needed items and processing product action alerts.",
-          })}
+          {t("needs_subtitle")}
         </p>
       </div>
 

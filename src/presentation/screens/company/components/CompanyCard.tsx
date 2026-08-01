@@ -12,6 +12,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Company } from "@/domain/entities/Company";
+import { useLanguage } from "@/presentation/components/language-provider";
 
 interface CompanyCardProps {
   company: Company;
@@ -30,6 +31,7 @@ export function CompanyCard({
   dir,
   t,
 }: CompanyCardProps) {
+  const { formatCurrency } = useLanguage();
   const totalBillsAmount = company.bills
     ? company.bills.reduce((sum: number, b: { totalAmount: number }) => sum + b.totalAmount, 0)
     : 0;
@@ -73,7 +75,7 @@ export function CompanyCard({
               {t("total_bills", { defaultValue: "Total Bills:" })}
             </span>
             <span className="font-bold text-blue-600 dark:text-blue-400">
-              ${totalBillsAmount.toFixed(2)}
+              {formatCurrency(totalBillsAmount)}
             </span>
           </div>
         </div>

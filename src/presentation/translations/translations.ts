@@ -1,5 +1,6 @@
 export const translations = {
   en: {
+    currency: "IQD",
     theme: "Theme",
     language: "Language",
     total_bills: "Total Bills",
@@ -219,6 +220,7 @@ export const translations = {
     description_required: "Description is required",
   },
   ku: {
+    currency: "د.ع",
     theme: "ڕووکار",
     language: "زمان",
     total_bills: "کۆی پسوڵەکان",

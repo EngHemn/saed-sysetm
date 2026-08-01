@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/tooltip";
 import { cn, getLocalizedValue } from "@/lib/utils";
 import { Product } from "@/domain/entities/Product";
+import { useLanguage } from "@/presentation/components/language-provider";
 
 interface ProductListGridProps {
   products: Product[];
@@ -34,6 +35,7 @@ export function ProductListGrid({
   language,
   t,
 }: ProductListGridProps) {
+  const { formatCurrency } = useLanguage();
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 gap-4 mb-6">
       {products.map((product) => {
@@ -43,7 +45,7 @@ export function ProductListGrid({
             key={product.id}
             className="overflow-hidden py-0 border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 hover:shadow-md transition-all duration-300 flex flex-row items-stretch h-40"
           >
-            <div className="relative md:min-w-44 w-full sm:w-36 bg-zinc-50 dark:bg-zinc-900 flex items-center justify-center shrink-0 border-r rtl:border-r-0 rtl:border-l border-zinc-150 dark:border-zinc-800/80">
+            <div className="relative w-32 sm:w-36 md:w-44 bg-zinc-50 dark:bg-zinc-900 flex items-center justify-center shrink-0 border-r rtl:border-r-0 rtl:border-l border-zinc-150 dark:border-zinc-800/80">
               {product.image ? (
                 <Image
                   src={product.image}
@@ -118,8 +120,8 @@ export function ProductListGrid({
                     <span className="text-[10px] text-zinc-450 dark:text-zinc-500 uppercase">
                       {t("middle_price")}
                     </span>
-                    <span className="text-xs font-semibold text-zinc-600 dark:text-zinc-450">
-                      ${product.middlePrice.toFixed(2)}
+                    <span className="text-xs font-semibold text-zinc-600 dark:text-zinc-455">
+                      {formatCurrency(product.middlePrice)}
                     </span>
                   </div>
                   <div className="flex flex-col items-end text-start">
@@ -127,7 +129,7 @@ export function ProductListGrid({
                       {t("final_price")}
                     </span>
                     <span className="text-sm font-bold text-zinc-900 dark:text-zinc-50">
-                      ${product.finalPrice.toFixed(2)}
+                      {formatCurrency(product.finalPrice)}
                     </span>
                   </div>
                 </div>

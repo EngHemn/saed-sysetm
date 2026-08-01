@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/tooltip";
 import { cn, getLocalizedValue } from "@/lib/utils";
 import { Product } from "@/domain/entities/Product";
+import { useLanguage } from "@/presentation/components/language-provider";
 
 interface BillFormProductComboboxProps {
   comboboxRef: React.RefObject<HTMLDivElement | null>;
@@ -55,6 +56,7 @@ export function BillFormProductCombobox({
   language,
   t,
 }: BillFormProductComboboxProps) {
+  const { formatCurrency } = useLanguage();
   return (
     <div className="sm:col-span-6 space-y-1.5 relative" ref={comboboxRef}>
       <Label className="text-xs text-zinc-650 dark:text-zinc-400 text-left block">
@@ -195,10 +197,10 @@ export function BillFormProductCombobox({
                         )}
                       </div>
                     </div>
-                    <div className="text-right shrink-0 ml-2">
+                     <div className="text-right shrink-0 ml-2">
                       <span className="font-bold text-emerald-600 dark:text-emerald-400">
-                        {t("initial", { defaultValue: "Initial" })}: $
-                        {prod.initPrice.toFixed(2)}
+                        {t("initial", { defaultValue: "Initial" })}:{" "}
+                        {formatCurrency(prod.initPrice)}
                       </span>
                     </div>
                   </div>

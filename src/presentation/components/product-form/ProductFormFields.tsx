@@ -157,13 +157,13 @@ export function ProductFormFields({
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="space-y-2">
           <Label htmlFor="inline-product-initPrice" className="text-zinc-900 dark:text-zinc-300 text-left block">
-            {t("purchase_price")} ($) <span className="text-red-500">*</span>
+            {t("purchase_price")} ({t("currency")}) <span className="text-red-500">*</span>
           </Label>
           <Input
             id="inline-product-initPrice"
             type="number"
-            step="0.01"
-            placeholder="0.00"
+            step="1"
+            placeholder="0"
             {...register("initPrice", { valueAsNumber: true })}
             className="bg-zinc-50 dark:bg-zinc-900/30 border-zinc-200 dark:border-zinc-800 text-left"
           />
@@ -176,13 +176,13 @@ export function ProductFormFields({
 
         <div className="space-y-2">
           <Label htmlFor="inline-product-middlePrice" className="text-zinc-900 dark:text-zinc-300 text-left block">
-            {t("middle_price")} ($) <span className="text-red-500">*</span>
+            {t("middle_price")} ({t("currency")}) <span className="text-red-500">*</span>
           </Label>
           <Input
             id="inline-product-middlePrice"
             type="number"
-            step="0.01"
-            placeholder="0.00"
+            step="1"
+            placeholder="0"
             {...register("middlePrice", { valueAsNumber: true })}
             className="bg-zinc-50 dark:bg-zinc-900/30 border-zinc-200 dark:border-zinc-800 text-left"
           />
@@ -195,13 +195,13 @@ export function ProductFormFields({
 
         <div className="space-y-2">
           <Label htmlFor="inline-product-finalPrice" className="text-zinc-900 dark:text-zinc-300 text-left block">
-            {t("final_price")} ($) <span className="text-red-500">*</span>
+            {t("final_price")} ({t("currency")}) <span className="text-red-500">*</span>
           </Label>
           <Input
             id="inline-product-finalPrice"
             type="number"
-            step="0.01"
-            placeholder="0.00"
+            step="1"
+            placeholder="0"
             {...register("finalPrice", { valueAsNumber: true })}
             className="bg-zinc-50 dark:bg-zinc-900/30 border-zinc-200 dark:border-zinc-800 text-left"
           />

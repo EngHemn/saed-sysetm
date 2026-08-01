@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dialog";
 import { getLocalizedValue } from "@/lib/utils";
 import { Bill, BillItem } from "@/domain/entities/Bill";
+import { useLanguage } from "@/presentation/components/language-provider";
 
 interface BillDetailSummaryCardProps {
   bill: Bill;
@@ -24,6 +25,7 @@ export function BillDetailSummaryCard({
   bill,
   t,
 }: BillDetailSummaryCardProps) {
+  const { formatCurrency } = useLanguage();
   const renderStatusBadge = (status: string) => {
     if (status === "Paid") {
       return (
@@ -60,7 +62,7 @@ export function BillDetailSummaryCard({
               {t("total_amount")}
             </span>
             <span className="text-2xl font-bold text-zinc-900 dark:text-zinc-50 block text-left">
-              ${bill.totalAmount.toFixed(2)}
+              {formatCurrency(bill.totalAmount)}
             </span>
           </div>
           <div className="space-y-1">
@@ -68,7 +70,7 @@ export function BillDetailSummaryCard({
               {t("paid_amount")}
             </span>
             <span className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 block text-left">
-              ${bill.paidAmount.toFixed(2)}
+              {formatCurrency(bill.paidAmount)}
             </span>
           </div>
           <div className="space-y-1">
@@ -76,7 +78,7 @@ export function BillDetailSummaryCard({
               {t("remaining_amount")}
             </span>
             <span className="text-2xl font-bold text-amber-600 dark:text-amber-400 block text-left">
-              ${bill.remainingAmount.toFixed(2)}
+              {formatCurrency(bill.remainingAmount)}
             </span>
           </div>
           <div className="space-y-1">
@@ -106,6 +108,7 @@ export function BillItemDialog({
   language,
   t,
 }: BillItemDialogProps) {
+  const { formatCurrency } = useLanguage();
   return (
     <Dialog
       open={!!dialogItem}
@@ -168,7 +171,7 @@ export function BillItemDialog({
                   {t("purchase_price")}
                 </span>
                 <span className="font-bold text-emerald-600">
-                  ${dialogItem.initialPrice.toFixed(2)}
+                  {formatCurrency(dialogItem.initialPrice)}
                 </span>
               </div>
               <div>
@@ -176,7 +179,7 @@ export function BillItemDialog({
                   {t("middle_price")}
                 </span>
                 <span className="font-bold text-zinc-700 dark:text-zinc-300">
-                  ${dialogItem.middlePrice.toFixed(2)}
+                  {formatCurrency(dialogItem.middlePrice)}
                 </span>
               </div>
               <div>
@@ -184,7 +187,7 @@ export function BillItemDialog({
                   {t("final_price")}
                 </span>
                 <span className="font-bold text-zinc-900 dark:text-zinc-50">
-                  ${dialogItem.finalPrice.toFixed(2)}
+                  {formatCurrency(dialogItem.finalPrice)}
                 </span>
               </div>
             </div>

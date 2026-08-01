@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { Bill } from "@/domain/entities/Bill";
+import { useLanguage } from "@/presentation/components/language-provider";
 
 interface BillListGridProps {
   bills: Bill[];
@@ -37,6 +38,7 @@ export function BillListGrid({
   setDeleteTargetId,
   t,
 }: BillListGridProps) {
+  const { formatCurrency } = useLanguage();
   const renderStatusBadge = (status: string) => {
     if (status === "Paid") {
       return (
@@ -119,15 +121,15 @@ export function BillListGrid({
             <div className="grid grid-cols-3 gap-2 p-3 rounded-lg bg-zinc-50 dark:bg-zinc-900/30 border border-zinc-100 dark:border-zinc-800/60 text-xs">
               <div className="flex flex-col text-start">
                 <span className="text-[10px] text-zinc-400 dark:text-zinc-500 uppercase">{t("total")}</span>
-                <span className="font-bold text-zinc-900 dark:text-zinc-100">${bill.totalAmount.toFixed(2)}</span>
+                <span className="font-bold text-zinc-900 dark:text-zinc-100">{formatCurrency(bill.totalAmount)}</span>
               </div>
               <div className="flex flex-col text-start">
                 <span className="text-[10px] text-zinc-400 dark:text-zinc-500 uppercase">{t("paid")}</span>
-                <span className="font-semibold text-emerald-600 dark:text-emerald-450">${bill.paidAmount.toFixed(2)}</span>
+                <span className="font-semibold text-emerald-600 dark:text-emerald-450">{formatCurrency(bill.paidAmount)}</span>
               </div>
               <div className="flex flex-col text-start">
                 <span className="text-[10px] text-zinc-400 dark:text-zinc-500 uppercase">{t("remaining_amount")}</span>
-                <span className="font-semibold text-amber-600 dark:text-amber-450">${bill.remainingAmount.toFixed(2)}</span>
+                <span className="font-semibold text-amber-600 dark:text-amber-450">{formatCurrency(bill.remainingAmount)}</span>
               </div>
             </div>
 

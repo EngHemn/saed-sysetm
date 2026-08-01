@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/sheet";
 import { getLocalizedValue } from "@/lib/utils";
 import { Product } from "@/domain/entities/Product";
+import { useLanguage } from "@/presentation/components/language-provider";
 
 interface BillFormProductSheetProps {
   drawerProduct: Product | null;
@@ -29,6 +30,7 @@ export function BillFormProductSheet({
   language,
   t,
 }: BillFormProductSheetProps) {
+  const { formatCurrency } = useLanguage();
   return (
     <Sheet
       open={!!drawerProduct}
@@ -90,7 +92,7 @@ export function BillFormProductSheet({
                   {t("purchase_price")}
                 </span>
                 <span className="text-sm font-bold text-emerald-600 dark:text-emerald-400 text-center block">
-                  ${drawerProduct.initPrice.toFixed(2)}
+                  {formatCurrency(drawerProduct.initPrice)}
                 </span>
               </div>
               <div className="space-y-1">
@@ -98,7 +100,7 @@ export function BillFormProductSheet({
                   {t("middle_price")}
                 </span>
                 <span className="text-sm font-bold text-zinc-700 dark:text-zinc-300 text-center block">
-                  ${drawerProduct.middlePrice.toFixed(2)}
+                  {formatCurrency(drawerProduct.middlePrice)}
                 </span>
               </div>
               <div className="space-y-1">
@@ -106,7 +108,7 @@ export function BillFormProductSheet({
                   {t("final_price")}
                 </span>
                 <span className="text-sm font-bold text-zinc-900 dark:text-zinc-50 text-center block">
-                  ${drawerProduct.finalPrice.toFixed(2)}
+                  {formatCurrency(drawerProduct.finalPrice)}
                 </span>
               </div>
             </div>
