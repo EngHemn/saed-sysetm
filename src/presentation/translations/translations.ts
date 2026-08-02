@@ -59,7 +59,11 @@ export const translations = {
     products_subtitle:
       "Manage your store inventory, pricing, and stock levels.",
     add_product: "Add Product",
+    add_product_desc: "Create a new product in the store",
     edit_product: "Edit Product",
+    edit_product_desc: "Update product pricing and inventory details",
+    specifications: "Specifications",
+    title: "Title",
     product_details: "Product Details",
     product_name: "Product Name",
     product_title: "Title",
@@ -179,6 +183,8 @@ export const translations = {
     description_placeholder:
       "Describe why this is needed, quantities required, etc...",
     uploading_image: "Uploading image...",
+    compressing_image: "Compressing image...",
+    optimizing_image: "Optimizing image...",
     upload_image: "Upload image",
     no_alerted_products: "No Alerted Products",
     no_alerted_products_desc:
@@ -278,7 +284,11 @@ export const translations = {
     products: "بەرهەمەکان",
     products_subtitle: "کۆنترۆڵی کۆگا، نرخ، و بڕی کاڵاکانت بکە.",
     add_product: "زیادکردنی بەرهەم",
+    add_product_desc: "دروستکردنی بەرهەمێکی نوێ لە کۆگادا",
     edit_product: "دەستکاریکردنی بەرهەم",
+    edit_product_desc: "نوێکردنەوەی زانیارییەکانی نرخ و کۆگای بەرهەم",
+    specifications: "تایبەتمەندییەکان",
+    title: "ناونیشان",
     product_details: "زانیارییەکانی بەرهەم",
     product_name: "ناوی بەرهەم",
     product_title: "ناونیشان",
@@ -397,6 +407,8 @@ export const translations = {
     description_placeholder:
       "ڕوونکردنەوە بنووسە بۆچی ئەمە پێویستە، بڕی داواکراو، هتد...",
     uploading_image: "وێنە باردەکرێت...",
+    compressing_image: "بچووککردنەوەی وێنە...",
+    optimizing_image: "باشترکردنی وێنە...",
     upload_image: "بارکردنی وێنە",
     no_alerted_products: "هیچ بەرهەمێکی ئاگادارکراو نییە",
     no_alerted_products_desc:

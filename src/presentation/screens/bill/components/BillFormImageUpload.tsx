@@ -8,9 +8,11 @@ import { Label } from "@/components/ui/label";
 
 interface BillFormImageUploadProps {
   imageUrl?: string | null;
-  handleImageUpload: (e: React.ChangeEvent<HTMLInputElement>) => Promise<void>;
+  handleImageUpload: (e: React.ChangeEvent<HTMLInputElement>) => Promise<string | null> | Promise<void>;
   removeImage: () => void;
   uploadingImage: boolean;
+  isCompressing?: boolean;
+  isImageLoading?: boolean;
   imageError: string | null;
   t: (key: string, values?: Record<string, string | number>) => string;
 }
@@ -20,12 +22,15 @@ export function BillFormImageUpload({
   handleImageUpload,
   removeImage,
   uploadingImage,
+  isCompressing,
+  isImageLoading,
   imageError,
   t,
 }: BillFormImageUploadProps) {
+  const isLoading = isImageLoading ?? uploadingImage;
   return (
     <div className="space-y-2 pt-2 border-t border-zinc-100 dark:border-zinc-900">
-      <Label className="text-zinc-900 dark:text-zinc-300 font-semibold text-left block">
+      <Label className="text-zinc-900 dark:text-zinc-300 font-semibold text-start block">
         {t("bill_image", { defaultValue: "Bill / Receipt Image" })}
       </Label>
 
@@ -56,32 +61,34 @@ export function BillFormImageUpload({
             accept="image/*"
             onChange={handleImageUpload}
             className="hidden"
-            disabled={uploadingImage}
+            disabled={isLoading}
           />
           <label
             htmlFor="bill-image-file"
             className="flex flex-col items-center justify-center cursor-pointer space-y-2 w-full h-full py-4"
           >
-            {uploadingImage ? (
+            {isLoading ? (
               <Loader2 className="h-8 w-8 animate-spin text-zinc-500" />
             ) : (
               <Upload className="h-8 w-8 text-zinc-400" />
             )}
             <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300 text-center">
-              {uploadingImage
+              {isCompressing
+                ? t("compressing_image", { defaultValue: "Compressing image..." })
+                : uploadingImage
                 ? t("uploading_image", { defaultValue: "Uploading image..." })
                 : t("upload_image", {
                     defaultValue: "Upload bill / receipt image",
                   })}
             </span>
             <span className="text-xs text-zinc-500">
-              PNG, JPG, GIF up to 5MB
+              PNG, JPG, WebP (auto-optimized 400-500 KB)
             </span>
           </label>
         </div>
       )}
       {imageError && (
-        <p className="text-xs font-medium text-red-655 dark:text-red-400 text-left">
+        <p className="text-xs font-medium text-red-655 dark:text-red-400 text-start">
           {imageError}
         </p>
       )}

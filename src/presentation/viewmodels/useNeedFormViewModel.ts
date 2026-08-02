@@ -7,6 +7,7 @@ import { useNeeds, useNeed } from "@/presentation/hooks/useNeeds";
 import { useProduct } from "@/presentation/hooks/useProducts";
 import { getLocalizedValue } from "@/lib/utils";
 import { useLanguage } from "@/presentation/components/language-provider";
+import { useImageUpload } from "@/presentation/hooks/useImageUpload";
 
 export function useNeedFormViewModel(id?: string) {
   const router = useRouter();
@@ -20,8 +21,17 @@ export function useNeedFormViewModel(id?: string) {
   const { need, isLoading: isFetchingNeed, updateNeed, isUpdating } = useNeed(id);
   const { product, isLoading: isFetchingProduct } = useProduct(productIdParam || undefined);
 
-  const [uploadingImage, setUploadingImage] = useState(false);
-  const [imageError, setImageError] = useState<string | null>(null);
+  const {
+    isCompressing,
+    isUploading: uploadingImage,
+    isLoading: isImageLoading,
+    error: imageError,
+    handleFileChange: handleImageUpload,
+  } = useImageUpload({
+    onSuccess: (url) => {
+      setValue("image", url, { shouldValidate: true });
+    },
+  });
 
   const form = useForm<NeedInput>({
     resolver: zodResolver(needSchema),
@@ -59,42 +69,7 @@ export function useNeedFormViewModel(id?: string) {
     }
   }, [need, product, isEditMode, reset, language]);
 
-  const handleImageUpload = useCallback(
-    async (e: React.ChangeEvent<HTMLInputElement>) => {
-      const file = e.target.files?.[0];
-      if (!file) return;
 
-      setUploadingImage(true);
-      setImageError(null);
-
-      const formData = new FormData();
-      formData.append("file", file);
-
-      try {
-        const response = await fetch("/api/upload-image", {
-          method: "POST",
-          body: formData,
-        });
-
-        if (!response.ok) {
-          throw new Error("Failed to upload image");
-        }
-
-        const data = await response.json();
-        if (data.success && data.result?.secure_url) {
-          setValue("image", data.result.secure_url, { shouldValidate: true });
-        } else {
-          throw new Error(data.error || "Upload failed");
-        }
-      } catch (err: unknown) {
-        const message = err instanceof Error ? err.message : "An error occurred during upload";
-        setImageError(message);
-      } finally {
-        setUploadingImage(false);
-      }
-    },
-    [setValue]
-  );
 
   const removeImage = useCallback(() => {
     setValue("image", "", { shouldValidate: true });
@@ -132,7 +107,9 @@ export function useNeedFormViewModel(id?: string) {
     setValue,
     errors: formState.errors,
     isSubmitting,
+    isCompressing,
     uploadingImage,
+    isImageLoading,
     imageError,
     imageUrl,
     selectedPriority,

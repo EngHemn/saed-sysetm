@@ -122,27 +122,9 @@ export function ProductListScreen() {
           </CardContent>
         </Card>
       ) : (
-        <div
-          className={cn(
-            viewMode === "list" &&
-              "rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 overflow-hidden shadow-xs"
-          )}
-        >
-          {viewMode === "list" ? (
-            <ProductListTable
-              products={products}
-              sortBy={sortBy}
-              sortOrder={sortOrder}
-              handleSort={handleSort}
-              isTogglingAlert={isTogglingAlert}
-              togglingAlertId={togglingAlertId}
-              handleToggleAlert={handleToggleAlert}
-              setDeleteTargetId={setDeleteTargetId}
-              dir={dir}
-              language={language}
-              t={t}
-            />
-          ) : (
+        <div>
+          {/* Mobile View: Always display cards */}
+          <div className="block md:hidden">
             <ProductListGrid
               products={products}
               isTogglingAlert={isTogglingAlert}
@@ -152,7 +134,38 @@ export function ProductListScreen() {
               language={language}
               t={t}
             />
-          )}
+          </div>
+
+          {/* Desktop View: Respect viewMode selection */}
+          <div className="hidden md:block">
+            {viewMode === "list" ? (
+              <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 overflow-hidden shadow-xs">
+                <ProductListTable
+                  products={products}
+                  sortBy={sortBy}
+                  sortOrder={sortOrder}
+                  handleSort={handleSort}
+                  isTogglingAlert={isTogglingAlert}
+                  togglingAlertId={togglingAlertId}
+                  handleToggleAlert={handleToggleAlert}
+                  setDeleteTargetId={setDeleteTargetId}
+                  dir={dir}
+                  language={language}
+                  t={t}
+                />
+              </div>
+            ) : (
+              <ProductListGrid
+                products={products}
+                isTogglingAlert={isTogglingAlert}
+                togglingAlertId={togglingAlertId}
+                handleToggleAlert={handleToggleAlert}
+                setDeleteTargetId={setDeleteTargetId}
+                language={language}
+                t={t}
+              />
+            )}
+          </div>
 
           <ProductListPagination
             page={page}

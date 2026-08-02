@@ -9,8 +9,10 @@ import { Label } from "@/components/ui/label";
 interface ProductFormImageSectionProps {
   imageUrl?: string | null;
   uploadingImage: boolean;
+  isCompressing?: boolean;
+  isImageLoading?: boolean;
   imageError: string | null;
-  handleImageUpload: (e: React.ChangeEvent<HTMLInputElement>) => Promise<void>;
+  handleImageUpload: (e: React.ChangeEvent<HTMLInputElement>) => Promise<string | null> | Promise<void>;
   removeImage: () => void;
   t: (key: string, values?: Record<string, string | number>) => string;
 }
@@ -18,14 +20,17 @@ interface ProductFormImageSectionProps {
 export function ProductFormImageSection({
   imageUrl,
   uploadingImage,
+  isCompressing,
+  isImageLoading,
   imageError,
   handleImageUpload,
   removeImage,
   t,
 }: ProductFormImageSectionProps) {
+  const isLoading = isImageLoading ?? uploadingImage;
   return (
     <div className="space-y-2">
-      <Label className="text-zinc-900 dark:text-zinc-300 text-left block">
+      <Label className="text-zinc-900 dark:text-zinc-300 text-start block">
         {t("image")}
       </Label>
       {imageUrl ? (
@@ -55,19 +60,21 @@ export function ProductFormImageSection({
             accept="image/*"
             onChange={handleImageUpload}
             className="hidden"
-            disabled={uploadingImage}
+            disabled={isLoading}
           />
           <label
             htmlFor="inline-product-image-file"
             className="flex flex-col items-center justify-center cursor-pointer space-y-2 w-full h-full py-2"
           >
-            {uploadingImage ? (
+            {isLoading ? (
               <Loader2 className="h-6 w-6 animate-spin text-zinc-500" />
             ) : (
               <Upload className="h-6 w-6 text-zinc-400" />
             )}
             <span className="text-xs font-medium text-zinc-700 dark:text-zinc-300">
-              {uploadingImage
+              {isCompressing
+                ? t("compressing_image", { defaultValue: "Compressing image..." })
+                : uploadingImage
                 ? t("uploading_image", { defaultValue: "Uploading image..." })
                 : t("upload_image", { defaultValue: "Upload logo" })}
             </span>
@@ -75,7 +82,7 @@ export function ProductFormImageSection({
         </div>
       )}
       {imageError && (
-        <p className="text-xs font-medium text-red-555 dark:text-red-400 text-left">
+        <p className="text-xs font-medium text-red-555 dark:text-red-400 text-start">
           {imageError}
         </p>
       )}

@@ -12,16 +12,15 @@ import { Label } from "@/components/ui/label";
 import { useLanguage } from "./language-provider";
 import { ProductFormFields, ProductFormInput } from "./product-form/ProductFormFields";
 import { ProductFormImageSection } from "./product-form/ProductFormImageSection";
+import { useImageUpload } from "@/presentation/hooks/useImageUpload";
 
 const productFormSchema = z.object({
-  title_en: z.string().min(1, "English title is required"),
-  title_ku: z.string().min(1, "Kurdish title is required"),
-  description_en: z.string().nullable().optional(),
-  description_ku: z.string().nullable().optional(),
+  title: z.string().min(1, "Title is required"),
+  description: z.string().nullable().optional(),
   image: z.string().url("Invalid image URL").nullable().optional().or(z.literal("")),
-  initPrice: z.number().min(0, "Initial price must be at least 0"),
-  middlePrice: z.number().min(0, "Middle price must be at least 0"),
-  finalPrice: z.number().min(0, "Final price must be at least 0"),
+  initPrice: z.number({ message: "Price is required" }).min(0, "Initial price must be at least 0"),
+  middlePrice: z.number({ message: "Price is required" }).min(0, "Middle price must be at least 0"),
+  finalPrice: z.number({ message: "Price is required" }).min(0, "Final price must be at least 0"),
   brand: z.string().nullable().optional(),
   categoryId: z.string().min(1, "Category is required"),
   actionAlert: z.boolean(),
@@ -35,8 +34,6 @@ interface ProductFormProps {
 
 export function ProductForm({ onSubmit, onCancel, isSubmitting }: ProductFormProps) {
   const { categories, isLoading: isLoadingCategories } = useCategories();
-  const [uploadingImage, setUploadingImage] = useState(false);
-  const [imageError, setImageError] = useState<string | null>(null);
   const { t, dir } = useLanguage();
 
   const {
@@ -48,17 +45,27 @@ export function ProductForm({ onSubmit, onCancel, isSubmitting }: ProductFormPro
   } = useForm<ProductFormInput>({
     resolver: zodResolver(productFormSchema),
     defaultValues: {
-      title_en: "",
-      title_ku: "",
-      description_en: "",
-      description_ku: "",
+      title: "",
+      description: "",
       image: "",
-      initPrice: 0,
-      middlePrice: 0,
-      finalPrice: 0,
+      initPrice: undefined as unknown as number,
+      middlePrice: undefined as unknown as number,
+      finalPrice: undefined as unknown as number,
       brand: "",
       categoryId: "",
       actionAlert: false,
+    },
+  });
+
+  const {
+    isCompressing,
+    isUploading: uploadingImage,
+    isLoading: isImageLoading,
+    error: imageError,
+    handleFileChange: handleImageUpload,
+  } = useImageUpload({
+    onSuccess: (url) => {
+      setValue("image", url, { shouldValidate: true });
     },
   });
 
@@ -69,52 +76,18 @@ export function ProductForm({ onSubmit, onCancel, isSubmitting }: ProductFormPro
   const selectedCategory = categories.find((cat) => cat.id === selectedCategoryId);
   const categoryBrands = selectedCategory?.brand || [];
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    setUploadingImage(true);
-    setImageError(null);
-
-    const formData = new FormData();
-    formData.append("file", file);
-
-    try {
-      const response = await fetch("/api/upload-image", {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to upload image");
-      }
-
-      const data = await response.json();
-      if (data.success && data.result?.secure_url) {
-        setValue("image", data.result.secure_url, { shouldValidate: true });
-      } else {
-        throw new Error(data.error || "Upload failed");
-      }
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : "An error occurred during upload";
-      setImageError(message);
-    } finally {
-      setUploadingImage(false);
-    }
-  };
-
   const removeImage = () => {
     setValue("image", "", { shouldValidate: true });
   };
 
   const handleFormSubmit = async (data: ProductFormInput) => {
     const apiData: ProductInput = {
-      title: JSON.stringify({ en: data.title_en, ku: data.title_ku }),
-      description: JSON.stringify({ en: data.description_en || "", ku: data.description_ku || "" }),
+      title: JSON.stringify({ en: data.title, ku: data.title }),
+      description: JSON.stringify({ en: data.description || "", ku: data.description || "" }),
       image: data.image,
-      initPrice: data.initPrice,
-      middlePrice: data.middlePrice,
-      finalPrice: data.finalPrice,
+      initPrice: Number(data.initPrice),
+      middlePrice: Number(data.middlePrice),
+      finalPrice: Number(data.finalPrice),
       brand: data.brand,
       categoryId: data.categoryId,
       actionAlert: data.actionAlert,
@@ -125,10 +98,9 @@ export function ProductForm({ onSubmit, onCancel, isSubmitting }: ProductFormPro
 
   const getValidationError = (message: string | undefined) => {
     if (!message) return undefined;
-    if (message === "English title is required") return t("title_required_en", { defaultValue: "English title is required" });
-    if (message === "Kurdish title is required") return t("title_required_ku", { defaultValue: "Kurdish title is required" });
+    if (message === "Title is required") return t("title_required", { defaultValue: "Title is required" });
     if (message === "Category is required") return t("category_required");
-    if (message === "Initial price must be at least 0") return t("init_price_min");
+    if (message === "Price is required" || message === "Initial price must be at least 0") return t("init_price_min");
     if (message === "Middle price must be at least 0") return t("middle_price_min");
     if (message === "Final price must be at least 0") return t("final_price_min");
     return t(message);
@@ -153,6 +125,8 @@ export function ProductForm({ onSubmit, onCancel, isSubmitting }: ProductFormPro
       <ProductFormImageSection
         imageUrl={imageUrl}
         uploadingImage={uploadingImage}
+        isCompressing={isCompressing}
+        isImageLoading={isImageLoading}
         imageError={imageError}
         handleImageUpload={handleImageUpload}
         removeImage={removeImage}

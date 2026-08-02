@@ -5,7 +5,6 @@ import { useLanguage } from "@/presentation/components/language-provider";
 
 export function useNeedsViewModel() {
   const { t, dir, language } = useLanguage();
-  const [viewMode, setViewMode] = useState<"list" | "card">("list");
   const [activeTab, setActiveTab] = useState("products");
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
@@ -87,8 +86,6 @@ export function useNeedsViewModel() {
   );
 
   return {
-    viewMode,
-    setViewMode,
     activeTab,
     handleTabChange,
     searchQuery,
@@ -117,3 +114,4 @@ export function useNeedsViewModel() {
     language,
   };
 }
+

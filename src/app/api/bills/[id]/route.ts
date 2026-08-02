@@ -4,6 +4,7 @@ import { GetBillByIdUseCase } from "@/domain/usecases/GetBillByIdUseCase";
 import { UpdateBillUseCase } from "@/domain/usecases/UpdateBillUseCase";
 import { UpdateBillStatusUseCase } from "@/domain/usecases/UpdateBillStatusUseCase";
 import { DeleteBillUseCase } from "@/domain/usecases/DeleteBillUseCase";
+import { deleteCloudinaryImageByUrl } from "@/lib/cloudinary";
 
 const billRepository = new BillRepository();
 const getBillByIdUseCase = new GetBillByIdUseCase(billRepository);
@@ -35,7 +36,19 @@ export async function PUT(
   try {
     const { id } = await params;
     const body = await request.json();
+
+    const existingBill = await getBillByIdUseCase.execute(id);
     const bill = await updateBillUseCase.execute(id, body);
+
+    if (
+      existingBill &&
+      existingBill.image &&
+      body.image !== undefined &&
+      existingBill.image !== body.image
+    ) {
+      await deleteCloudinaryImageByUrl(existingBill.image);
+    }
+
     return NextResponse.json(bill);
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : "Failed to update bill";
@@ -69,6 +82,12 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params;
+
+    const billToDelete = await getBillByIdUseCase.execute(id);
+    if (billToDelete && billToDelete.image) {
+      await deleteCloudinaryImageByUrl(billToDelete.image);
+    }
+
     const bill = await deleteBillUseCase.execute(id);
     return NextResponse.json(bill);
   } catch (error: unknown) {

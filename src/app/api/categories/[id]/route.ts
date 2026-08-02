@@ -3,6 +3,7 @@ import { CategoryRepository } from "@/data/repositories/CategoryRepository";
 import { GetCategoryByIdUseCase } from "@/domain/usecases/GetCategoryByIdUseCase";
 import { UpdateCategoryUseCase } from "@/domain/usecases/UpdateCategoryUseCase";
 import { DeleteCategoryUseCase } from "@/domain/usecases/DeleteCategoryUseCase";
+import { deleteCloudinaryImageByUrl } from "@/lib/cloudinary";
 
 const categoryRepository = new CategoryRepository();
 const getCategoryByIdUseCase = new GetCategoryByIdUseCase(categoryRepository);
@@ -35,7 +36,21 @@ export async function PUT(
   try {
     const { id } = await params;
     const body = await request.json();
+
+    const existingCategory = await getCategoryByIdUseCase.execute(id);
+
     const category = await updateCategoryUseCase.execute(id, body);
+
+    // If image changed or removed during update, delete old image from Cloudinary
+    if (
+      existingCategory &&
+      existingCategory.image &&
+      body.image !== undefined &&
+      existingCategory.image !== body.image
+    ) {
+      await deleteCloudinaryImageByUrl(existingCategory.image);
+    }
+
     return NextResponse.json(category);
   } catch (error: any) {
     return NextResponse.json(
@@ -51,6 +66,13 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params;
+
+    // Fetch category to retrieve image URL before deleting
+    const categoryToDelete = await getCategoryByIdUseCase.execute(id);
+    if (categoryToDelete && categoryToDelete.image) {
+      await deleteCloudinaryImageByUrl(categoryToDelete.image);
+    }
+
     const category = await deleteCategoryUseCase.execute(id);
     return NextResponse.json(category);
   } catch (error: any) {

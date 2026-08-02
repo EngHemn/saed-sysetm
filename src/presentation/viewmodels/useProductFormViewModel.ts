@@ -7,25 +7,22 @@ import { ProductInput } from "@/domain/schemas/product";
 import { useProducts, useProduct } from "@/presentation/hooks/useProducts";
 import { useCategories } from "@/presentation/hooks/useCategories";
 import { useLanguage } from "@/presentation/components/language-provider";
+import { useImageUpload } from "@/presentation/hooks/useImageUpload";
 
 export const productFormSchema = z.object({
-  title_en: z.string().min(1, "English title is required"),
-  title_ku: z.string().min(1, "Kurdish title is required"),
-  description_en: z.string().nullable().optional(),
-  description_ku: z.string().nullable().optional(),
+  title: z.string().min(1, "Title is required"),
+  description: z.string().nullable().optional(),
   image: z.string().url("Invalid image URL").nullable().optional().or(z.literal("")),
-  initPrice: z.number().min(0, "Initial price must be at least 0"),
-  middlePrice: z.number().min(0, "Middle price must be at least 0"),
-  finalPrice: z.number().min(0, "Final price must be at least 0"),
+  initPrice: z.number({ message: "Price is required" }).min(0, "Initial price must be at least 0"),
+  middlePrice: z.number({ message: "Price is required" }).min(0, "Middle price must be at least 0"),
+  finalPrice: z.number({ message: "Price is required" }).min(0, "Final price must be at least 0"),
   brand: z.string().nullable().optional(),
   categoryId: z.string().min(1, "Category is required"),
   actionAlert: z.boolean(),
   info: z.array(
     z.object({
-      title_en: z.string().min(1, "Specification title is required"),
-      title_ku: z.string().min(1, "Specification title is required"),
-      description_en: z.string().min(1, "Specification description is required"),
-      description_ku: z.string().min(1, "Specification description is required"),
+      title: z.string().min(1, "Specification title is required"),
+      description: z.string().min(1, "Specification description is required"),
     })
   ),
 });
@@ -41,20 +38,27 @@ export function useProductFormViewModel(id?: string) {
   const { product, isLoading: isFetching, updateProduct, isUpdating } = useProduct(id);
   const { categories, isLoading: isLoadingCategories } = useCategories();
 
-  const [uploadingImage, setUploadingImage] = useState(false);
-  const [imageError, setImageError] = useState<string | null>(null);
+  const {
+    isCompressing,
+    isUploading: uploadingImage,
+    isLoading: isImageLoading,
+    error: imageError,
+    handleFileChange: handleImageUpload,
+  } = useImageUpload({
+    onSuccess: (url) => {
+      setValue("image", url, { shouldValidate: true });
+    },
+  });
 
   const form = useForm<ProductFormInput>({
     resolver: zodResolver(productFormSchema),
     defaultValues: {
-      title_en: "",
-      title_ku: "",
-      description_en: "",
-      description_ku: "",
+      title: "",
+      description: "",
       image: "",
-      initPrice: 0,
-      middlePrice: 0,
-      finalPrice: 0,
+      initPrice: undefined as unknown as number,
+      middlePrice: undefined as unknown as number,
+      finalPrice: undefined as unknown as number,
       brand: "",
       categoryId: "",
       actionAlert: false,
@@ -69,37 +73,29 @@ export function useProductFormViewModel(id?: string) {
   const selectedBrand = watch("brand");
   const infoList = watch("info") || [];
 
-  const [infoTitleEn, setInfoTitleEn] = useState("");
-  const [infoTitleKu, setInfoTitleKu] = useState("");
-  const [infoDescriptionEn, setInfoDescriptionEn] = useState("");
-  const [infoDescriptionKu, setInfoDescriptionKu] = useState("");
+  const [infoTitle, setInfoTitle] = useState("");
+  const [infoDescription, setInfoDescription] = useState("");
 
   const addInfoItem = useCallback(() => {
-    const trimmedTitleEn = infoTitleEn.trim();
-    const trimmedTitleKu = infoTitleKu.trim();
-    const trimmedDescEn = infoDescriptionEn.trim();
-    const trimmedDescKu = infoDescriptionKu.trim();
+    const trimmedTitle = infoTitle.trim();
+    const trimmedDesc = infoDescription.trim();
 
-    if (trimmedTitleEn && trimmedTitleKu && trimmedDescEn && trimmedDescKu) {
+    if (trimmedTitle && trimmedDesc) {
       setValue(
         "info",
         [
           ...infoList,
           {
-            title_en: trimmedTitleEn,
-            title_ku: trimmedTitleKu,
-            description_en: trimmedDescEn,
-            description_ku: trimmedDescKu,
+            title: trimmedTitle,
+            description: trimmedDesc,
           },
         ],
         { shouldValidate: true }
       );
-      setInfoTitleEn("");
-      setInfoTitleKu("");
-      setInfoDescriptionEn("");
-      setInfoDescriptionKu("");
+      setInfoTitle("");
+      setInfoDescription("");
     }
-  }, [infoTitleEn, infoTitleKu, infoDescriptionEn, infoDescriptionKu, infoList, setValue]);
+  }, [infoTitle, infoDescription, infoList, setValue]);
 
   const removeInfoItem = useCallback(
     (indexToRemove: number) => {
@@ -120,68 +116,52 @@ export function useProductFormViewModel(id?: string) {
 
   useEffect(() => {
     if (product) {
-      let title_en = "";
-      let title_ku = "";
+      let title = "";
       try {
         const parsedTitle = JSON.parse(product.title);
-        title_en = parsedTitle.en || "";
-        title_ku = parsedTitle.ku || "";
+        title = parsedTitle.en || parsedTitle.ku || product.title;
       } catch {
-        title_en = product.title;
-        title_ku = product.title;
+        title = product.title;
       }
 
-      let description_en = "";
-      let description_ku = "";
+      let description = "";
       if (product.description) {
         try {
           const parsedDesc = JSON.parse(product.description);
-          description_en = parsedDesc.en || "";
-          description_ku = parsedDesc.ku || "";
+          description = parsedDesc.en || parsedDesc.ku || product.description;
         } catch {
-          description_en = product.description;
-          description_ku = product.description;
+          description = product.description;
         }
       }
 
       const specificationsList = (
         (product.info as Array<{ title: string; description: string }>) || []
       ).map((item) => {
-        let itemTitleEn = "";
-        let itemTitleKu = "";
+        let itemTitle = "";
         try {
           const parsedItemTitle = JSON.parse(item.title);
-          itemTitleEn = parsedItemTitle.en || "";
-          itemTitleKu = parsedItemTitle.ku || "";
+          itemTitle = parsedItemTitle.en || parsedItemTitle.ku || item.title;
         } catch {
-          itemTitleEn = item.title;
-          itemTitleKu = item.title;
+          itemTitle = item.title;
         }
 
-        let itemDescEn = "";
-        let itemDescKu = "";
+        let itemDesc = "";
         try {
           const parsedItemDesc = JSON.parse(item.description);
-          itemDescEn = parsedItemDesc.en || "";
-          itemDescKu = parsedItemDesc.ku || "";
+          itemDesc = parsedItemDesc.en || parsedItemDesc.ku || item.description;
         } catch {
-          itemDescEn = item.description;
-          itemDescKu = item.description;
+          itemDesc = item.description;
         }
 
         return {
-          title_en: itemTitleEn,
-          title_ku: itemTitleKu,
-          description_en: itemDescEn,
-          description_ku: itemDescKu,
+          title: itemTitle,
+          description: itemDesc,
         };
       });
 
       reset({
-        title_en,
-        title_ku,
-        description_en,
-        description_ku,
+        title,
+        description,
         image: product.image || "",
         initPrice: product.initPrice,
         middlePrice: product.middlePrice,
@@ -194,39 +174,7 @@ export function useProductFormViewModel(id?: string) {
     }
   }, [product, reset]);
 
-  const handleImageUpload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
 
-    setUploadingImage(true);
-    setImageError(null);
-
-    const formData = new FormData();
-    formData.append("file", file);
-
-    try {
-      const response = await fetch("/api/upload-image", {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to upload image");
-      }
-
-      const data = await response.json();
-      if (data.success && data.result?.secure_url) {
-        setValue("image", data.result.secure_url, { shouldValidate: true });
-      } else {
-        throw new Error(data.error || "Upload failed");
-      }
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : "An error occurred during upload";
-      setImageError(message);
-    } finally {
-      setUploadingImage(false);
-    }
-  }, [setValue]);
 
   const removeImage = useCallback(() => {
     setValue("image", "", { shouldValidate: true });
@@ -234,18 +182,18 @@ export function useProductFormViewModel(id?: string) {
 
   const onSubmit = async (data: ProductFormInput) => {
     const apiData: ProductInput = {
-      title: JSON.stringify({ en: data.title_en, ku: data.title_ku }),
-      description: JSON.stringify({ en: data.description_en || "", ku: data.description_ku || "" }),
+      title: JSON.stringify({ en: data.title, ku: data.title }),
+      description: JSON.stringify({ en: data.description || "", ku: data.description || "" }),
       image: data.image,
-      initPrice: data.initPrice,
-      middlePrice: data.middlePrice,
-      finalPrice: data.finalPrice,
+      initPrice: Number(data.initPrice),
+      middlePrice: Number(data.middlePrice),
+      finalPrice: Number(data.finalPrice),
       brand: data.brand,
       categoryId: data.categoryId,
       actionAlert: data.actionAlert,
       info: data.info.map((item) => ({
-        title: JSON.stringify({ en: item.title_en, ku: item.title_ku }),
-        description: JSON.stringify({ en: item.description_en, ku: item.description_ku }),
+        title: JSON.stringify({ en: item.title, ku: item.title }),
+        description: JSON.stringify({ en: item.description, ku: item.description }),
       })),
     };
 
@@ -263,12 +211,10 @@ export function useProductFormViewModel(id?: string) {
 
   const getValidationError = (message: string | undefined) => {
     if (!message) return undefined;
-    if (message === "English title is required")
-      return t("title_required_en", { defaultValue: "English title is required" });
-    if (message === "Kurdish title is required")
-      return t("title_required_ku", { defaultValue: "Kurdish title is required" });
+    if (message === "Title is required")
+      return t("title_required", { defaultValue: "Title is required" });
     if (message === "Category is required") return t("category_required");
-    if (message === "Initial price must be at least 0") return t("init_price_min");
+    if (message === "Price is required" || message === "Initial price must be at least 0") return t("init_price_min");
     if (message === "Middle price must be at least 0") return t("middle_price_min");
     if (message === "Final price must be at least 0") return t("final_price_min");
     return t(message);
@@ -284,7 +230,9 @@ export function useProductFormViewModel(id?: string) {
     setValue,
     errors: formState.errors,
     isSubmitting,
+    isCompressing,
     uploadingImage,
+    isImageLoading,
     imageError,
     imageUrl,
     selectedCategoryId,
@@ -294,14 +242,10 @@ export function useProductFormViewModel(id?: string) {
     categories,
     isLoadingCategories,
     infoList,
-    infoTitleEn,
-    setInfoTitleEn,
-    infoTitleKu,
-    setInfoTitleKu,
-    infoDescriptionEn,
-    setInfoDescriptionEn,
-    infoDescriptionKu,
-    setInfoDescriptionKu,
+    infoTitle,
+    setInfoTitle,
+    infoDescription,
+    setInfoDescription,
     addInfoItem,
     removeInfoItem,
     handleImageUpload,

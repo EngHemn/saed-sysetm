@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { categorySchema, CategoryInput } from "@/domain/schemas/category";
 import { useCategories, useCategory } from "@/presentation/hooks/useCategories";
 import { useLanguage } from "@/presentation/components/language-provider";
+import { useImageUpload } from "@/presentation/hooks/useImageUpload";
 
 export function useCategoryFormViewModel(id?: string) {
   const router = useRouter();
@@ -18,8 +19,17 @@ export function useCategoryFormViewModel(id?: string) {
     isUpdating,
   } = useCategory(id);
 
-  const [uploadingImage, setUploadingImage] = useState(false);
-  const [imageError, setImageError] = useState<string | null>(null);
+  const {
+    isCompressing,
+    isUploading: uploadingImage,
+    isLoading: isImageLoading,
+    error: imageError,
+    handleFileChange: handleImageUpload,
+  } = useImageUpload({
+    onSuccess: (url) => {
+      setValue("image", url, { shouldValidate: true });
+    },
+  });
   const [brandInput, setBrandInput] = useState("");
 
   const form = useForm<CategoryInput>({
@@ -67,42 +77,7 @@ export function useCategoryFormViewModel(id?: string) {
     }
   }, [category, reset]);
 
-  const handleImageUpload = useCallback(
-    async (e: React.ChangeEvent<HTMLInputElement>) => {
-      const file = e.target.files?.[0];
-      if (!file) return;
 
-      setUploadingImage(true);
-      setImageError(null);
-
-      const formData = new FormData();
-      formData.append("file", file);
-
-      try {
-        const response = await fetch("/api/upload-image", {
-          method: "POST",
-          body: formData,
-        });
-
-        if (!response.ok) {
-          throw new Error("Failed to upload image");
-        }
-
-        const data = await response.json();
-        if (data.success && data.result?.secure_url) {
-          setValue("image", data.result.secure_url, { shouldValidate: true });
-        } else {
-          throw new Error(data.error || "Upload failed");
-        }
-      } catch (err: unknown) {
-        const msg = err instanceof Error ? err.message : "An error occurred during upload";
-        setImageError(msg);
-      } finally {
-        setUploadingImage(false);
-      }
-    },
-    [setValue]
-  );
 
   const removeImage = useCallback(() => {
     setValue("image", "", { shouldValidate: true });
@@ -136,7 +111,9 @@ export function useCategoryFormViewModel(id?: string) {
     handleSubmit: handleSubmit(onSubmit),
     errors: formState.errors,
     isSubmitting,
+    isCompressing,
     uploadingImage,
+    isImageLoading,
     imageError,
     imageUrl,
     brands,

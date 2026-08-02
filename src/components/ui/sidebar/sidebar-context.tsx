@@ -21,7 +21,9 @@ export type SidebarContextProps = {
   toggleSidebar: () => void;
 };
 
-export const SidebarContext = React.createContext<SidebarContextProps | null>(null);
+export const SidebarContext = React.createContext<SidebarContextProps | null>(
+  null,
+);
 
 export function useSidebar() {
   const context = React.useContext(SidebarContext);
@@ -60,7 +62,7 @@ export function SidebarProvider({
 
       document.cookie = `${SIDEBAR_COOKIE_NAME}=${openState}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`;
     },
-    [setOpenProp, open]
+    [setOpenProp, open],
   );
 
   const toggleSidebar = React.useCallback(() => {
@@ -94,7 +96,7 @@ export function SidebarProvider({
       setOpenMobile,
       toggleSidebar,
     }),
-    [state, open, setOpen, isMobile, openMobile, setOpenMobile, toggleSidebar]
+    [state, open, setOpen, isMobile, openMobile, setOpenMobile, toggleSidebar],
   );
 
   return (
@@ -109,8 +111,8 @@ export function SidebarProvider({
           } as React.CSSProperties
         }
         className={cn(
-          "group/sidebar-wrapper flex min-h-svh w-full has-data-[variant=inset]:bg-sidebar",
-          className
+          "group/sidebar-wrapper  flex min-h-svh w-full has-data-[variant=inset]:bg-sidebar",
+          className,
         )}
         {...props}
       >

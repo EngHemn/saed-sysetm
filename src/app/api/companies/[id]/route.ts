@@ -3,6 +3,7 @@ import { CompanyRepository } from "@/data/repositories/CompanyRepository";
 import { GetCompanyByIdUseCase } from "@/domain/usecases/GetCompanyByIdUseCase";
 import { UpdateCompanyUseCase } from "@/domain/usecases/UpdateCompanyUseCase";
 import { DeleteCompanyUseCase } from "@/domain/usecases/DeleteCompanyUseCase";
+import { deleteCloudinaryImageByUrl } from "@/lib/cloudinary";
 
 const companyRepository = new CompanyRepository();
 const getCompanyByIdUseCase = new GetCompanyByIdUseCase(companyRepository);
@@ -33,7 +34,19 @@ export async function PUT(
   try {
     const { id } = await params;
     const body = await request.json();
+
+    const existingCompany = await getCompanyByIdUseCase.execute(id);
     const company = await updateCompanyUseCase.execute(id, body);
+
+    if (
+      existingCompany &&
+      existingCompany.image &&
+      body.image !== undefined &&
+      existingCompany.image !== body.image
+    ) {
+      await deleteCloudinaryImageByUrl(existingCompany.image);
+    }
+
     return NextResponse.json(company);
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : "Failed to update company";
@@ -47,6 +60,12 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params;
+
+    const companyToDelete = await getCompanyByIdUseCase.execute(id);
+    if (companyToDelete && companyToDelete.image) {
+      await deleteCloudinaryImageByUrl(companyToDelete.image);
+    }
+
     const company = await deleteCompanyUseCase.execute(id);
     return NextResponse.json(company);
   } catch (error: unknown) {

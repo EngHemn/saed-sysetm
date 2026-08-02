@@ -39,9 +39,11 @@ interface BillFormCompanySectionProps {
   register: UseFormRegister<BillInput>;
   errors: FieldErrors<BillInput>;
   imageUrl?: string | null;
-  handleImageUpload: (e: React.ChangeEvent<HTMLInputElement>) => Promise<void>;
+  handleImageUpload: (e: React.ChangeEvent<HTMLInputElement>) => Promise<string | null> | Promise<void>;
   removeImage: () => void;
   uploadingImage: boolean;
+  isCompressing?: boolean;
+  isImageLoading?: boolean;
   imageError: string | null;
   dir: "ltr" | "rtl";
   t: (key: string, values?: Record<string, string | number>) => string;
@@ -65,6 +67,8 @@ export function BillFormCompanySection({
   handleImageUpload,
   removeImage,
   uploadingImage,
+  isCompressing,
+  isImageLoading,
   imageError,
   dir,
   t,
@@ -72,7 +76,7 @@ export function BillFormCompanySection({
   return (
     <Card className="border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-sm">
       <CardHeader>
-        <CardTitle className="text-lg font-semibold text-zinc-900 dark:text-zinc-50 text-left">
+        <CardTitle className="text-lg font-semibold text-zinc-900 dark:text-zinc-50 text-start">
           {t("company_receipt_info", {
             defaultValue: "Company Information & Receipt Image",
           })}
@@ -80,7 +84,7 @@ export function BillFormCompanySection({
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-2">
-          <Label className="text-zinc-900 dark:text-zinc-300 font-semibold text-left block">
+          <Label className="text-zinc-900 dark:text-zinc-300 font-semibold text-start block">
             {t("company_search", { defaultValue: "Company Search" })}{" "}
             <span className="text-red-500">*</span>
           </Label>
@@ -91,10 +95,10 @@ export function BillFormCompanySection({
                   <Building className="h-5 w-5" />
                 </div>
                 <div className="space-y-1">
-                  <h4 className="font-extrabold text-zinc-955 dark:text-zinc-50 text-xs text-left">
+                  <h4 className="font-extrabold text-zinc-955 dark:text-zinc-50 text-xs text-start">
                     {selectedCompanyName}
                   </h4>
-                  <div className="flex items-center gap-3 text-zinc-555 dark:text-zinc-400 text-[10px] text-left">
+                  <div className="flex items-center gap-3 text-zinc-555 dark:text-zinc-400 text-[10px] text-start">
                     <span className="flex items-center gap-1">
                       <Phone className="h-3 w-3 text-zinc-400" />
                       {selectedCompanyPhone}
@@ -144,7 +148,7 @@ export function BillFormCompanySection({
                   onFocus={() => setIsCompanyComboboxOpen(true)}
                   className={`${
                     dir === "rtl" ? "pr-9 pl-10" : "pl-9 pr-10"
-                  } bg-zinc-50 dark:bg-zinc-900/30 border-zinc-200 dark:border-zinc-800 text-left`}
+                  } bg-zinc-50 dark:bg-zinc-900/30 border-zinc-200 dark:border-zinc-800 text-start`}
                 />
                 <ChevronDown
                   className={`absolute ${
@@ -220,7 +224,7 @@ export function BillFormCompanySection({
             </div>
           )}
           {(errors.customerName || errors.phone) && (
-            <p className="text-xs font-medium text-red-655 dark:text-red-400 text-left">
+            <p className="text-xs font-medium text-red-655 dark:text-red-400 text-start">
               {t("select_company_required", {
                 defaultValue: "Please select or add a company profile.",
               })}
@@ -232,7 +236,7 @@ export function BillFormCompanySection({
           <div className="space-y-2">
             <Label
               htmlFor="billDate"
-              className="text-zinc-900 dark:text-zinc-300 text-left block"
+              className="text-zinc-900 dark:text-zinc-300 text-start block"
             >
               {t("bill_date")}
             </Label>
@@ -240,7 +244,7 @@ export function BillFormCompanySection({
               id="billDate"
               type="date"
               {...register("billDate")}
-              className="bg-zinc-50 dark:bg-zinc-900/30 border-zinc-200 dark:border-zinc-800 text-left"
+              className="bg-zinc-50 dark:bg-zinc-900/30 border-zinc-200 dark:border-zinc-800 text-start"
             />
           </div>
         </div>
@@ -248,7 +252,7 @@ export function BillFormCompanySection({
         <div className="space-y-2">
           <Label
             htmlFor="notes"
-            className="text-zinc-900 dark:text-zinc-300 text-left block"
+            className="text-zinc-900 dark:text-zinc-300 text-start block"
           >
             {t("note")}
           </Label>
@@ -257,7 +261,7 @@ export function BillFormCompanySection({
             placeholder={t("note")}
             rows={2}
             {...register("notes")}
-            className="bg-zinc-50 dark:bg-zinc-900/30 border-zinc-200 dark:border-zinc-800 resize-none text-left"
+            className="bg-zinc-50 dark:bg-zinc-900/30 border-zinc-200 dark:border-zinc-800 resize-none text-start"
           />
         </div>
 
@@ -266,6 +270,8 @@ export function BillFormCompanySection({
           handleImageUpload={handleImageUpload}
           removeImage={removeImage}
           uploadingImage={uploadingImage}
+          isCompressing={isCompressing}
+          isImageLoading={isImageLoading}
           imageError={imageError}
           t={t}
         />

@@ -102,7 +102,7 @@ export function DashboardSidebar() {
   };
 
   return (
-    <Sidebar side={dir === "rtl" ? "right" : "left"} className="border-r border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-550">
+    <Sidebar side={dir === "rtl" ? "right" : "left"} className="pt-4 border-r border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-550">
       <SidebarHeader className="border-b border-zinc-200 dark:border-zinc-800 p-4 flex flex-row items-center justify-between">
         <div className="flex items-center gap-2">
           <div className="h-8 w-8 rounded-lg bg-zinc-900 dark:bg-zinc-100 flex items-center justify-center text-white dark:text-zinc-950 font-bold text-lg">

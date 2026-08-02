@@ -3,6 +3,7 @@ import { NeedRepository } from "@/data/repositories/NeedRepository";
 import { GetNeedByIdUseCase } from "@/domain/usecases/GetNeedByIdUseCase";
 import { UpdateNeedUseCase } from "@/domain/usecases/UpdateNeedUseCase";
 import { DeleteNeedUseCase } from "@/domain/usecases/DeleteNeedUseCase";
+import { deleteCloudinaryImageByUrl } from "@/lib/cloudinary";
 
 const needRepository = new NeedRepository();
 const getNeedByIdUseCase = new GetNeedByIdUseCase(needRepository);
@@ -33,7 +34,19 @@ export async function PUT(
   try {
     const { id } = await params;
     const body = await request.json();
+
+    const existingNeed = await getNeedByIdUseCase.execute(id);
     const need = await updateNeedUseCase.execute(id, body);
+
+    if (
+      existingNeed &&
+      existingNeed.image &&
+      body.image !== undefined &&
+      existingNeed.image !== body.image
+    ) {
+      await deleteCloudinaryImageByUrl(existingNeed.image);
+    }
+
     return NextResponse.json(need);
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : "Failed to update need";
@@ -47,6 +60,12 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params;
+
+    const needToDelete = await getNeedByIdUseCase.execute(id);
+    if (needToDelete && needToDelete.image) {
+      await deleteCloudinaryImageByUrl(needToDelete.image);
+    }
+
     const need = await deleteNeedUseCase.execute(id);
     return NextResponse.json(need);
   } catch (error: unknown) {

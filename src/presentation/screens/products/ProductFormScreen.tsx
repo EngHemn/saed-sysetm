@@ -38,7 +38,7 @@ export function ProductFormScreen({ id }: ProductFormScreenProps) {
 
       <Card className="border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-sm">
         <CardHeader>
-          <CardTitle className="text-lg font-semibold text-zinc-900 dark:text-zinc-50 text-left">
+          <CardTitle className="text-lg font-semibold text-zinc-900 dark:text-zinc-50 text-start">
             {viewModel.t("product_info")}
           </CardTitle>
         </CardHeader>
@@ -60,14 +60,10 @@ export function ProductFormScreen({ id }: ProductFormScreenProps) {
 
             <ProductFormSpecsSection
               infoList={viewModel.infoList}
-              infoTitleEn={viewModel.infoTitleEn}
-              setInfoTitleEn={viewModel.setInfoTitleEn}
-              infoTitleKu={viewModel.infoTitleKu}
-              setInfoTitleKu={viewModel.setInfoTitleKu}
-              infoDescriptionEn={viewModel.infoDescriptionEn}
-              setInfoDescriptionEn={viewModel.setInfoDescriptionEn}
-              infoDescriptionKu={viewModel.infoDescriptionKu}
-              setInfoDescriptionKu={viewModel.setInfoDescriptionKu}
+              infoTitle={viewModel.infoTitle}
+              setInfoTitle={viewModel.setInfoTitle}
+              infoDescription={viewModel.infoDescription}
+              setInfoDescription={viewModel.setInfoDescription}
               addInfoItem={viewModel.addInfoItem}
               removeInfoItem={viewModel.removeInfoItem}
               dir={viewModel.dir}
@@ -75,7 +71,7 @@ export function ProductFormScreen({ id }: ProductFormScreenProps) {
             />
 
             <div className="space-y-2">
-              <Label className="text-zinc-900 dark:text-zinc-300 text-left block">
+              <Label className="text-zinc-900 dark:text-zinc-300 text-start block">
                 {viewModel.t("image")}
               </Label>
               {viewModel.imageUrl ? (
@@ -105,19 +101,23 @@ export function ProductFormScreen({ id }: ProductFormScreenProps) {
                     accept="image/*"
                     onChange={viewModel.handleImageUpload}
                     className="hidden"
-                    disabled={viewModel.uploadingImage}
+                    disabled={viewModel.isImageLoading}
                   />
                   <label
                     htmlFor="product-image-file"
                     className="flex flex-col items-center justify-center cursor-pointer space-y-2 w-full h-full py-4"
                   >
-                    {viewModel.uploadingImage ? (
+                    {viewModel.isImageLoading ? (
                       <Loader2 className="h-8 w-8 animate-spin text-zinc-500" />
                     ) : (
                       <Upload className="h-8 w-8 text-zinc-400" />
                     )}
                     <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
-                      {viewModel.uploadingImage
+                      {viewModel.isCompressing
+                        ? viewModel.t("compressing_image", {
+                            defaultValue: "Compressing image...",
+                          })
+                        : viewModel.uploadingImage
                         ? viewModel.t("uploading_image", {
                             defaultValue: "Uploading image...",
                           })
@@ -126,13 +126,13 @@ export function ProductFormScreen({ id }: ProductFormScreenProps) {
                           })}
                     </span>
                     <span className="text-xs text-zinc-500">
-                      PNG, JPG, GIF up to 5MB
+                      PNG, JPG, WebP (auto-optimized 400-500 KB)
                     </span>
                   </label>
                 </div>
               )}
               {viewModel.imageError && (
-                <p className="text-xs font-medium text-red-655 dark:text-red-400 text-left">
+                <p className="text-xs font-medium text-red-655 dark:text-red-400 text-start">
                   {viewModel.imageError}
                 </p>
               )}
@@ -170,7 +170,7 @@ export function ProductFormScreen({ id }: ProductFormScreenProps) {
               </Link>
               <Button
                 type="submit"
-                disabled={viewModel.isSubmitting || viewModel.uploadingImage}
+                disabled={viewModel.isSubmitting || viewModel.isImageLoading}
                 className="bg-zinc-900 dark:bg-zinc-50 text-white dark:text-zinc-950 hover:bg-zinc-800 dark:hover:bg-zinc-200"
               >
                 {viewModel.isSubmitting ? (

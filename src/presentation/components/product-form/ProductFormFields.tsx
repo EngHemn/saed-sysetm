@@ -4,15 +4,12 @@ import React from "react";
 import { UseFormRegister, FieldErrors, UseFormSetValue } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Category } from "@/domain/entities/Category";
 
 export interface ProductFormInput {
-  title_en: string;
-  title_ku: string;
-  description_en?: string | null;
-  description_ku?: string | null;
+  title: string;
+  description?: string | null;
   image?: string | null;
   initPrice: number;
   middlePrice: number;
@@ -51,36 +48,20 @@ export function ProductFormFields({
 }: ProductFormFieldsProps) {
   return (
     <>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="inline-title-en" className="text-zinc-900 dark:text-zinc-300 text-left block">
-            {t("product_title")} (English) <span className="text-red-500">*</span>
+          <Label htmlFor="inline-title" className="text-zinc-900 dark:text-zinc-300 text-start block">
+            {t("product_title")} <span className="text-red-500">*</span>
           </Label>
           <Input
-            id="inline-title-en"
-            placeholder={t("product_title") + " (English)"}
-            {...register("title_en")}
-            className="bg-zinc-50 dark:bg-zinc-900/30 border-zinc-200 dark:border-zinc-800 text-left"
+            id="inline-title"
+            placeholder={t("product_title")}
+            {...register("title")}
+            className="bg-zinc-50 dark:bg-zinc-900/30 border-zinc-200 dark:border-zinc-800 text-start"
           />
-          {errors.title_en && (
-            <p className="text-xs font-medium text-red-555 dark:text-red-400 text-left">
-              {getValidationError(errors.title_en.message)}
-            </p>
-          )}
-        </div>
-        <div className="space-y-2" dir="rtl">
-          <Label htmlFor="inline-title-ku" className="text-zinc-900 dark:text-zinc-300 text-right block">
-            {t("product_title")} (کوردی) <span className="text-red-500">*</span>
-          </Label>
-          <Input
-            id="inline-title-ku"
-            placeholder={t("product_title") + " (کوردی)"}
-            {...register("title_ku")}
-            className="bg-zinc-50 dark:bg-zinc-900/30 border-zinc-200 dark:border-zinc-800 text-right"
-          />
-          {errors.title_ku && (
-            <p className="text-xs font-medium text-red-555 dark:text-red-400 text-right">
-              {getValidationError(errors.title_ku.message)}
+          {errors.title && (
+            <p className="text-xs font-medium text-red-555 dark:text-red-400 text-start">
+              {getValidationError(errors.title.message)}
             </p>
           )}
         </div>
@@ -88,7 +69,7 @@ export function ProductFormFields({
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="inline-product-category" className="text-zinc-900 dark:text-zinc-300 text-left block">
+          <Label htmlFor="inline-product-category" className="text-zinc-900 dark:text-zinc-300 text-start block">
             {t("category")} <span className="text-red-500">*</span>
           </Label>
           {isLoadingCategories ? (
@@ -116,14 +97,14 @@ export function ProductFormFields({
             </Select>
           )}
           {errors.categoryId && (
-            <p className="text-xs font-medium text-red-555 dark:text-red-400 text-left">
+            <p className="text-xs font-medium text-red-555 dark:text-red-400 text-start">
               {getValidationError(errors.categoryId.message)}
             </p>
           )}
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="inline-product-brand" className="text-zinc-900 dark:text-zinc-300 text-left block">
+          <Label htmlFor="inline-product-brand" className="text-zinc-900 dark:text-zinc-300 text-start block">
             {t("brand")}
           </Label>
           {categoryBrands.length > 0 ? (
@@ -148,7 +129,7 @@ export function ProductFormFields({
               id="inline-product-brand"
               placeholder={t("brand")}
               {...register("brand")}
-              className="bg-zinc-50 dark:bg-zinc-900/30 border-zinc-200 dark:border-zinc-800 text-left"
+              className="bg-zinc-50 dark:bg-zinc-900/30 border-zinc-200 dark:border-zinc-800 text-start"
             />
           )}
         </div>
@@ -156,86 +137,70 @@ export function ProductFormFields({
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="inline-product-initPrice" className="text-zinc-900 dark:text-zinc-300 text-left block">
+          <Label htmlFor="inline-product-initPrice" className="text-zinc-900 dark:text-zinc-300 text-start block">
             {t("purchase_price")} ({t("currency")}) <span className="text-red-500">*</span>
           </Label>
           <Input
             id="inline-product-initPrice"
             type="number"
             step="1"
-            placeholder="0"
             {...register("initPrice", { valueAsNumber: true })}
-            className="bg-zinc-50 dark:bg-zinc-900/30 border-zinc-200 dark:border-zinc-800 text-left"
+            className="bg-zinc-50 dark:bg-zinc-900/30 border-zinc-200 dark:border-zinc-800 text-start"
           />
           {errors.initPrice && (
-            <p className="text-xs font-medium text-red-555 dark:text-red-400 text-left">
+            <p className="text-xs font-medium text-red-555 dark:text-red-400 text-start">
               {getValidationError(errors.initPrice.message)}
             </p>
           )}
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="inline-product-middlePrice" className="text-zinc-900 dark:text-zinc-300 text-left block">
+          <Label htmlFor="inline-product-middlePrice" className="text-zinc-900 dark:text-zinc-300 text-start block">
             {t("middle_price")} ({t("currency")}) <span className="text-red-500">*</span>
           </Label>
           <Input
             id="inline-product-middlePrice"
             type="number"
             step="1"
-            placeholder="0"
             {...register("middlePrice", { valueAsNumber: true })}
-            className="bg-zinc-50 dark:bg-zinc-900/30 border-zinc-200 dark:border-zinc-800 text-left"
+            className="bg-zinc-50 dark:bg-zinc-900/30 border-zinc-200 dark:border-zinc-800 text-start"
           />
           {errors.middlePrice && (
-            <p className="text-xs font-medium text-red-555 dark:text-red-400 text-left">
+            <p className="text-xs font-medium text-red-555 dark:text-red-400 text-start">
               {getValidationError(errors.middlePrice.message)}
             </p>
           )}
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="inline-product-finalPrice" className="text-zinc-900 dark:text-zinc-300 text-left block">
+          <Label htmlFor="inline-product-finalPrice" className="text-zinc-900 dark:text-zinc-300 text-start block">
             {t("final_price")} ({t("currency")}) <span className="text-red-500">*</span>
           </Label>
           <Input
             id="inline-product-finalPrice"
             type="number"
             step="1"
-            placeholder="0"
             {...register("finalPrice", { valueAsNumber: true })}
-            className="bg-zinc-50 dark:bg-zinc-900/30 border-zinc-200 dark:border-zinc-800 text-left"
+            className="bg-zinc-50 dark:bg-zinc-900/30 border-zinc-200 dark:border-zinc-800 text-start"
           />
           {errors.finalPrice && (
-            <p className="text-xs font-medium text-red-555 dark:text-red-400 text-left">
+            <p className="text-xs font-medium text-red-555 dark:text-red-400 text-start">
               {getValidationError(errors.finalPrice.message)}
             </p>
           )}
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="inline-product-description-en" className="text-zinc-900 dark:text-zinc-300 text-left block">
-            {t("description")} (English)
+          <Label htmlFor="inline-product-description" className="text-zinc-900 dark:text-zinc-300 text-start block">
+            {t("description")}
           </Label>
-          <Textarea
-            id="inline-product-description-en"
-            placeholder={t("description") + " (English)"}
-            rows={3}
-            {...register("description_en")}
-            className="bg-zinc-50 dark:bg-zinc-900/30 border-zinc-200 dark:border-zinc-800 resize-none text-left"
-          />
-        </div>
-        <div className="space-y-2" dir="rtl">
-          <Label htmlFor="inline-product-description-ku" className="text-zinc-900 dark:text-zinc-300 text-right block">
-            {t("description")} (کوردی)
-          </Label>
-          <Textarea
-            id="inline-product-description-ku"
-            placeholder={t("description") + " (کوردی)"}
-            rows={3}
-            {...register("description_ku")}
-            className="bg-zinc-50 dark:bg-zinc-900/30 border-zinc-200 dark:border-zinc-800 resize-none text-right"
+          <Input
+            id="inline-product-description"
+            placeholder={t("description")}
+            {...register("description")}
+            className="bg-zinc-50 dark:bg-zinc-900/30 border-zinc-200 dark:border-zinc-800 text-start"
           />
         </div>
       </div>

@@ -36,10 +36,10 @@ export function CategoryCard({
   category,
   onDeleteInitiated,
 }: CategoryCardProps) {
-  const { t } = useLanguage();
+  const { t, dir } = useLanguage();
 
   return (
-    <Card className="group overflow-hidden pt-0 border border-zinc-200 dark:border-zinc-850 bg-white dark:bg-zinc-955 hover:shadow-lg hover:-translate-y-1 hover:border-zinc-350 dark:hover:border-zinc-700 transition-all duration-300 flex flex-col h-[350px] gap-0">
+    <Card dir={dir} className="group overflow-hidden pt-0 border border-zinc-200 dark:border-zinc-855 bg-white dark:bg-zinc-955 hover:shadow-lg hover:-translate-y-1 hover:border-zinc-350 dark:hover:border-zinc-700 transition-all duration-300 flex flex-col h-[350px] gap-0">
       <div className="relative h-44 flex-1 w-full bg-zinc-50 dark:bg-zinc-900/30 overflow-hidden flex items-center justify-center border-b border-zinc-100 dark:border-zinc-900/60">
         {category.image ? (
           <Image
@@ -60,13 +60,13 @@ export function CategoryCard({
       </div>
 
       <CardHeader className="py-0 my-0">
-        <CardTitle className="text-lg font-bold text-zinc-900 dark:text-zinc-50 line-clamp-1 transition-colors text-left">
+        <CardTitle className="text-lg font-bold text-zinc-900 dark:text-zinc-50 line-clamp-1 transition-colors text-start">
           {category.title}
         </CardTitle>
       </CardHeader>
 
       <CardContent className="px-4 my-0 py-3 flex flex-col">
-        <p className="text-sm text-zinc-555 dark:text-zinc-400 line-clamp-2 leading-relaxed text-left">
+        <p className="text-sm text-zinc-555 dark:text-zinc-400 line-clamp-2 leading-relaxed text-start">
           {category.description ||
             t("no_description_provided", {
               defaultValue: "No description provided for this category.",
@@ -85,12 +85,12 @@ export function CategoryCard({
             ))}
             {category.brand.length > 2 && (
               <Popover>
-                <PopoverTrigger className="text-[10px] font-medium bg-zinc-50 dark:bg-zinc-900/30 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-500 dark:text-zinc-450 px-2 py-0.5 rounded-full transition-colors cursor-pointer outline-none">
+                <PopoverTrigger className="text-[10px] font-medium bg-zinc-50 dark:bg-zinc-900/30 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-500 dark:text-zinc-455 px-2 py-0.5 rounded-full transition-colors cursor-pointer outline-none">
                   +{category.brand.length - 2} {t("more", { defaultValue: "more" })}
                 </PopoverTrigger>
                 <PopoverContent className="w-56 p-3 bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg shadow-md z-50">
                   <div className="space-y-2">
-                    <h4 className="text-xs font-semibold text-zinc-900 dark:text-zinc-100 border-b border-zinc-100 dark:border-zinc-900 pb-1 text-left">
+                    <h4 className="text-xs font-semibold text-zinc-900 dark:text-zinc-100 border-b border-zinc-100 dark:border-zinc-900 pb-1 text-start">
                       {t("brands")}
                     </h4>
                     <div className="flex flex-wrap gap-1 max-h-36 overflow-y-auto">

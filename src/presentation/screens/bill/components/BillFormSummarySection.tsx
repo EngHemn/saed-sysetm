@@ -44,7 +44,7 @@ export function BillFormSummarySection({
   return (
     <Card className="border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-955 shadow-sm">
       <CardHeader>
-        <CardTitle className="text-lg font-semibold text-zinc-900 dark:text-zinc-50 text-left">
+        <CardTitle className="text-lg font-semibold text-zinc-900 dark:text-zinc-50 text-start">
           {t("payment_calc_summary", {
             defaultValue: "Payment Calculation & Summary",
           })}
@@ -55,7 +55,7 @@ export function BillFormSummarySection({
           <div className="space-y-2">
             <Label
               htmlFor="paidAmount"
-              className="text-zinc-900 dark:text-zinc-300 text-left block"
+              className="text-zinc-900 dark:text-zinc-300 text-start block"
             >
               {t("paid_amount")} ({t("currency")}) <span className="text-red-500">*</span>
             </Label>
@@ -65,17 +65,17 @@ export function BillFormSummarySection({
               step="1"
               min="0"
               {...register("paidAmount", { valueAsNumber: true })}
-              className="bg-zinc-50 dark:bg-zinc-900/30 border-zinc-200 dark:border-zinc-800 font-semibold text-left animate-none"
+              className="bg-zinc-50 dark:bg-zinc-900/30 border-zinc-200 dark:border-zinc-800 font-semibold text-start animate-none"
             />
             {errors.paidAmount && (
-              <p className="text-xs font-medium text-red-655 dark:text-red-400 text-left animate-none">
+              <p className="text-xs font-medium text-red-655 dark:text-red-400 text-start animate-none">
                 {getValidationError(errors.paidAmount.message)}
               </p>
             )}
           </div>
 
           <div className="space-y-2">
-            <Label className="text-zinc-900 dark:text-zinc-300 text-left block">
+            <Label className="text-zinc-900 dark:text-zinc-300 text-start block">
               {t("total_amount")} ({t("currency")})
             </Label>
             <div className="h-10 px-3 flex items-center rounded-md bg-zinc-100 dark:bg-zinc-900 font-bold text-zinc-900 dark:text-zinc-50">
@@ -84,7 +84,7 @@ export function BillFormSummarySection({
           </div>
 
           <div className="space-y-2">
-            <Label className="text-zinc-900 dark:text-zinc-300 text-left block">
+            <Label className="text-zinc-900 dark:text-zinc-300 text-start block">
               {t("remaining_amount")} ({t("currency")})
             </Label>
             <div className="h-10 px-3 flex items-center rounded-md bg-zinc-100 dark:bg-zinc-900 font-bold text-amber-600 dark:text-amber-400">

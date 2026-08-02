@@ -32,7 +32,7 @@ export function CategoryFormScreen({ id }: CategoryFormScreenProps) {
 
       <Card className="border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 shadow-sm">
         <CardHeader>
-          <CardTitle className="text-lg font-semibold text-zinc-900 dark:text-zinc-50 text-left">
+          <CardTitle className="text-lg font-semibold text-zinc-900 dark:text-zinc-50 text-start">
             {viewModel.t("category_details")}
           </CardTitle>
         </CardHeader>

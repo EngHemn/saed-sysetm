@@ -3,6 +3,7 @@ import { ProductRepository } from "@/data/repositories/ProductRepository";
 import { GetProductByIdUseCase } from "@/domain/usecases/GetProductByIdUseCase";
 import { UpdateProductUseCase } from "@/domain/usecases/UpdateProductUseCase";
 import { DeleteProductUseCase } from "@/domain/usecases/DeleteProductUseCase";
+import { deleteCloudinaryImageByUrl } from "@/lib/cloudinary";
 
 const productRepository = new ProductRepository();
 const getProductByIdUseCase = new GetProductByIdUseCase(productRepository);
@@ -31,7 +32,21 @@ export async function PUT(request: Request, context: Context) {
   try {
     const { id } = await context.params;
     const body = await request.json();
+
+    const existingProduct = await getProductByIdUseCase.execute(id);
+
     const product = await updateProductUseCase.execute(id, body);
+
+    // If image changed or removed during update, delete the old image from Cloudinary
+    if (
+      existingProduct &&
+      existingProduct.image &&
+      body.image !== undefined &&
+      existingProduct.image !== body.image
+    ) {
+      await deleteCloudinaryImageByUrl(existingProduct.image);
+    }
+
     return NextResponse.json(product);
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : "Failed to update product";
@@ -42,6 +57,13 @@ export async function PUT(request: Request, context: Context) {
 export async function DELETE(request: Request, context: Context) {
   try {
     const { id } = await context.params;
+    
+    // Fetch product to retrieve image URL before deleting
+    const productToDelete = await getProductByIdUseCase.execute(id);
+    if (productToDelete && productToDelete.image) {
+      await deleteCloudinaryImageByUrl(productToDelete.image);
+    }
+
     const product = await deleteProductUseCase.execute(id);
     return NextResponse.json(product);
   } catch (error: unknown) {

@@ -18,6 +18,8 @@ interface CategoryFormFieldsProps {
   errors: FieldErrors<CategoryInput>;
   isSubmitting: boolean;
   uploadingImage: boolean;
+  isCompressing?: boolean;
+  isImageLoading?: boolean;
   imageError: string | null;
   imageUrl: string | null | undefined;
   brands: string[];
@@ -25,7 +27,7 @@ interface CategoryFormFieldsProps {
   setBrandInput: (val: string) => void;
   addBrand: () => void;
   removeBrand: (idx: number) => void;
-  handleImageUpload: (e: React.ChangeEvent<HTMLInputElement>) => Promise<void>;
+  handleImageUpload: (e: React.ChangeEvent<HTMLInputElement>) => Promise<string | null> | Promise<void>;
   removeImage: () => void;
   getValidationError: (msg?: string) => any;
   t: (key: string, values?: Record<string, string | number>) => string;
@@ -38,6 +40,8 @@ export function CategoryFormFields({
   errors,
   isSubmitting,
   uploadingImage,
+  isCompressing,
+  isImageLoading,
   imageError,
   imageUrl,
   brands,
@@ -51,27 +55,28 @@ export function CategoryFormFields({
   t,
   dir,
 }: CategoryFormFieldsProps) {
+  const isLoadingImage = isImageLoading ?? uploadingImage;
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       <div className="space-y-2">
-        <Label htmlFor="title" className="text-zinc-900 dark:text-zinc-300 text-left block">
+        <Label htmlFor="title" className="text-zinc-900 dark:text-zinc-300 text-start block">
           {t("category_title")} <span className="text-red-500">*</span>
         </Label>
         <Input
           id="title"
           placeholder={t("category_title")}
           {...register("title")}
-          className="bg-zinc-50 dark:bg-zinc-900/30 border-zinc-200 dark:border-zinc-800 focus-visible:ring-zinc-950 dark:focus-visible:ring-zinc-300 text-left"
+          className="bg-zinc-50 dark:bg-zinc-900/30 border-zinc-200 dark:border-zinc-800 focus-visible:ring-zinc-950 dark:focus-visible:ring-zinc-300 text-start"
         />
         {errors.title && (
-          <p className="text-xs font-medium text-red-650 dark:text-red-400 text-left">
+          <p className="text-xs font-medium text-red-650 dark:text-red-400 text-start">
             {getValidationError(errors.title.message)}
           </p>
         )}
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="brand-input" className="text-zinc-900 dark:text-zinc-300 text-left block">
+        <Label htmlFor="brand-input" className="text-zinc-900 dark:text-zinc-300 text-start block">
           {t("brands")}
         </Label>
         <div className="flex gap-2">
@@ -86,7 +91,7 @@ export function CategoryFormFields({
                 addBrand();
               }
             }}
-            className="bg-zinc-50 dark:bg-zinc-900/30 border-zinc-200 dark:border-zinc-800 focus-visible:ring-zinc-950 dark:focus-visible:ring-zinc-300 text-left"
+            className="bg-zinc-50 dark:bg-zinc-900/30 border-zinc-200 dark:border-zinc-800 focus-visible:ring-zinc-950 dark:focus-visible:ring-zinc-300 text-start"
           />
           <Button
             type="button"
@@ -117,14 +122,14 @@ export function CategoryFormFields({
           </div>
         )}
         {errors.brand && (
-          <p className="text-xs font-medium text-red-650 dark:text-red-400 text-left">
+          <p className="text-xs font-medium text-red-650 dark:text-red-400 text-start">
             {getValidationError(errors.brand.message)}
           </p>
         )}
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="description" className="text-zinc-900 dark:text-zinc-300 text-left block">
+        <Label htmlFor="description" className="text-zinc-900 dark:text-zinc-300 text-start block">
           {t("description")}
         </Label>
         <Textarea
@@ -132,17 +137,17 @@ export function CategoryFormFields({
           placeholder={t("description")}
           rows={4}
           {...register("description")}
-          className="bg-zinc-50 dark:bg-zinc-900/30 border-zinc-200 dark:border-zinc-800 focus-visible:ring-zinc-950 dark:focus-visible:ring-zinc-300 resize-none text-left"
+          className="bg-zinc-50 dark:bg-zinc-900/30 border-zinc-200 dark:border-zinc-800 focus-visible:ring-zinc-950 dark:focus-visible:ring-zinc-300 resize-none text-start"
         />
         {errors.description && (
-          <p className="text-xs font-medium text-red-655 dark:text-red-400 text-left">
+          <p className="text-xs font-medium text-red-655 dark:text-red-400 text-start">
             {getValidationError(errors.description.message)}
           </p>
         )}
       </div>
 
       <div className="space-y-2">
-        <Label className="text-zinc-900 dark:text-zinc-300 text-left block">{t("image")}</Label>
+        <Label className="text-zinc-900 dark:text-zinc-300 text-start block">{t("image")}</Label>
         {imageUrl ? (
           <div className="relative h-64 w-full rounded-lg border border-zinc-200 dark:border-zinc-800 overflow-hidden group">
             <Image
@@ -170,28 +175,30 @@ export function CategoryFormFields({
               accept="image/*"
               onChange={handleImageUpload}
               className="hidden"
-              disabled={uploadingImage}
+              disabled={isLoadingImage}
             />
             <label
               htmlFor="image-file"
               className="flex flex-col items-center justify-center cursor-pointer space-y-2 w-full h-full py-4"
             >
-              {uploadingImage ? (
+              {isLoadingImage ? (
                 <Loader2 className="h-8 w-8 animate-spin text-zinc-500" />
               ) : (
                 <Upload className="h-8 w-8 text-zinc-400" />
               )}
               <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
-                {uploadingImage
+                {isCompressing
+                  ? t("compressing_image", { defaultValue: "Compressing image..." })
+                  : uploadingImage
                   ? t("uploading_image", { defaultValue: "Uploading image..." })
                   : t("upload_image", { defaultValue: "Upload an image" })}
               </span>
-              <span className="text-xs text-zinc-500">PNG, JPG, GIF up to 5MB</span>
+              <span className="text-xs text-zinc-500">PNG, JPG, WebP (auto-optimized 400-500 KB)</span>
             </label>
           </div>
         )}
         {imageError && (
-          <p className="text-xs font-medium text-red-650 dark:text-red-400 text-left">
+          <p className="text-xs font-medium text-red-650 dark:text-red-400 text-start">
             {imageError}
           </p>
         )}
@@ -214,7 +221,7 @@ export function CategoryFormFields({
         </Link>
         <Button
           type="submit"
-          disabled={isSubmitting || uploadingImage}
+          disabled={isSubmitting || isLoadingImage}
           className="bg-zinc-900 dark:bg-zinc-50 text-white dark:text-zinc-950 hover:bg-zinc-800 dark:hover:bg-zinc-200"
         >
           {isSubmitting ? (

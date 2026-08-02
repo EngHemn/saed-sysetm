@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useLanguage } from "./language-provider";
+import { useImageUpload } from "@/presentation/hooks/useImageUpload";
 
 interface CompanyFormProps {
   initialValues?: Partial<CompanyInput>;
@@ -20,8 +21,6 @@ interface CompanyFormProps {
 }
 
 export function CompanyForm({ initialValues, onSubmit, onCancel, isSubmitting }: CompanyFormProps) {
-  const [uploadingImage, setUploadingImage] = useState(false);
-  const [imageError, setImageError] = useState<string | null>(null);
   const { t, dir } = useLanguage();
 
   const {
@@ -41,41 +40,19 @@ export function CompanyForm({ initialValues, onSubmit, onCancel, isSubmitting }:
     },
   });
 
+  const {
+    isCompressing,
+    isUploading: uploadingImage,
+    isLoading: isImageLoading,
+    error: imageError,
+    handleFileChange: handleImageUpload,
+  } = useImageUpload({
+    onSuccess: (url) => {
+      setValue("image", url, { shouldValidate: true });
+    },
+  });
+
   const imageUrl = watch("image");
-
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    setUploadingImage(true);
-    setImageError(null);
-
-    const formData = new FormData();
-    formData.append("file", file);
-
-    try {
-      const response = await fetch("/api/upload-image", {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to upload image");
-      }
-
-      const data = await response.json();
-      if (data.success && data.result?.secure_url) {
-        setValue("image", data.result.secure_url, { shouldValidate: true });
-      } else {
-        throw new Error(data.error || "Upload failed");
-      }
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : "An error occurred during upload";
-      setImageError(message);
-    } finally {
-      setUploadingImage(false);
-    }
-  };
 
   const removeImage = () => {
     setValue("image", "", { shouldValidate: true });
@@ -91,53 +68,53 @@ export function CompanyForm({ initialValues, onSubmit, onCancel, isSubmitting }:
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" dir={dir}>
       <div className="space-y-2">
-        <Label htmlFor="company-name" className="text-zinc-900 dark:text-zinc-300 text-left block">
+        <Label htmlFor="company-name" className="text-zinc-900 dark:text-zinc-300 text-start block">
           {t("company_name", { defaultValue: "Company Name" })} <span className="text-red-500">*</span>
         </Label>
         <Input
           id="company-name"
           placeholder={t("company_name", { defaultValue: "Company Name" })}
           {...register("name")}
-          className="bg-zinc-50 dark:bg-zinc-900/30 border-zinc-200 dark:border-zinc-800 text-left animate-none"
+          className="bg-zinc-50 dark:bg-zinc-900/30 border-zinc-200 dark:border-zinc-800 text-start animate-none"
         />
         {errors.name && (
-          <p className="text-xs font-medium text-red-555 dark:text-red-400 text-left animate-none">
+          <p className="text-xs font-medium text-red-555 dark:text-red-400 text-start animate-none">
             {getValidationError(errors.name.message)}
           </p>
         )}
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="company-phone" className="text-zinc-900 dark:text-zinc-300 text-left block">
+        <Label htmlFor="company-phone" className="text-zinc-900 dark:text-zinc-300 text-start block">
           {t("phone", { defaultValue: "Phone Number" })} <span className="text-red-500">*</span>
         </Label>
         <Input
           id="company-phone"
           placeholder={t("phone", { defaultValue: "Phone Number" })}
           {...register("phone")}
-          className="bg-zinc-50 dark:bg-zinc-900/30 border-zinc-200 dark:border-zinc-800 text-left animate-none"
+          className="bg-zinc-50 dark:bg-zinc-900/30 border-zinc-200 dark:border-zinc-800 text-start animate-none"
         />
         {errors.phone && (
-          <p className="text-xs font-medium text-red-555 dark:text-red-400 text-left animate-none">
+          <p className="text-xs font-medium text-red-555 dark:text-red-400 text-start animate-none">
             {getValidationError(errors.phone.message)}
           </p>
         )}
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="company-address" className="text-zinc-900 dark:text-zinc-300 text-left block">
+        <Label htmlFor="company-address" className="text-zinc-900 dark:text-zinc-300 text-start block">
           {t("address", { defaultValue: "Address" })}
         </Label>
         <Input
           id="company-address"
           placeholder={t("address", { defaultValue: "Address" })}
           {...register("address")}
-          className="bg-zinc-50 dark:bg-zinc-900/30 border-zinc-200 dark:border-zinc-800 text-left animate-none"
+          className="bg-zinc-50 dark:bg-zinc-900/30 border-zinc-200 dark:border-zinc-800 text-start animate-none"
         />
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="company-note" className="text-zinc-900 dark:text-zinc-300 text-left block">
+        <Label htmlFor="company-note" className="text-zinc-900 dark:text-zinc-300 text-start block">
           {t("note")}
         </Label>
         <Textarea
@@ -145,12 +122,12 @@ export function CompanyForm({ initialValues, onSubmit, onCancel, isSubmitting }:
           placeholder={t("note")}
           rows={3}
           {...register("note")}
-          className="bg-zinc-50 dark:bg-zinc-900/30 border-zinc-200 dark:border-zinc-800 resize-none text-left animate-none"
+          className="bg-zinc-50 dark:bg-zinc-900/30 border-zinc-200 dark:border-zinc-800 resize-none text-start animate-none"
         />
       </div>
 
       <div className="space-y-2">
-        <Label className="text-zinc-900 dark:text-zinc-300 text-left block">
+        <Label className="text-zinc-900 dark:text-zinc-300 text-start block">
           {t("image")}
         </Label>
         {imageUrl ? (
@@ -180,25 +157,29 @@ export function CompanyForm({ initialValues, onSubmit, onCancel, isSubmitting }:
               accept="image/*"
               onChange={handleImageUpload}
               className="hidden"
-              disabled={uploadingImage}
+              disabled={isImageLoading}
             />
             <label
               htmlFor="company-image-file"
               className="flex flex-col items-center justify-center cursor-pointer space-y-2 w-full h-full py-2"
             >
-              {uploadingImage ? (
+              {isImageLoading ? (
                 <Loader2 className="h-6 w-6 animate-spin text-zinc-500" />
               ) : (
                 <Upload className="h-6 w-6 text-zinc-400" />
               )}
               <span className="text-xs font-medium text-zinc-700 dark:text-zinc-300">
-                {uploadingImage ? t("uploading_image", { defaultValue: "Uploading..." }) : t("upload_image", { defaultValue: "Upload logo" })}
+                {isCompressing
+                  ? t("compressing_image", { defaultValue: "Compressing image..." })
+                  : uploadingImage
+                  ? t("uploading_image", { defaultValue: "Uploading image..." })
+                  : t("upload_image", { defaultValue: "Upload logo" })}
               </span>
             </label>
           </div>
         )}
         {imageError && (
-          <p className="text-xs font-medium text-red-555 dark:text-red-400 text-left animate-none">
+          <p className="text-xs font-medium text-red-555 dark:text-red-400 text-start animate-none">
             {imageError}
           </p>
         )}

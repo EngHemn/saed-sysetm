@@ -39,10 +39,10 @@ export function CategoryDeleteDialog({
         dir={dir}
       >
         <AlertDialogHeader>
-          <AlertDialogTitle className="text-zinc-900 dark:text-zinc-50 text-left">
+          <AlertDialogTitle className="text-zinc-900 dark:text-zinc-50 text-start">
             {t("confirm_delete_title")}
           </AlertDialogTitle>
-          <AlertDialogDescription className="text-zinc-550 dark:text-zinc-400 text-left">
+          <AlertDialogDescription className="text-zinc-550 dark:text-zinc-400 text-start">
             {t("delete_category_desc")}
           </AlertDialogDescription>
         </AlertDialogHeader>

@@ -84,7 +84,7 @@ export function BillFormProductsSection({
   return (
     <Card className="border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-955 shadow-sm">
       <CardHeader>
-        <CardTitle className="text-lg font-semibold text-zinc-900 dark:text-zinc-50 text-left">
+        <CardTitle className="text-lg font-semibold text-zinc-900 dark:text-zinc-50 text-start">
           {t("bill_products_items", {
             defaultValue: "Bill Products & Items",
           })}
@@ -92,7 +92,7 @@ export function BillFormProductsSection({
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="p-4 rounded-xl bg-zinc-50/70 dark:bg-zinc-900/30 border border-zinc-200 dark:border-zinc-800 space-y-4">
-          <h4 className="text-sm font-semibold text-zinc-900 dark:text-zinc-200 text-left">
+          <h4 className="text-sm font-semibold text-zinc-900 dark:text-zinc-200 text-start">
             {t("search_add_product", {
               defaultValue: "Search & Add Product Item",
             })}
@@ -120,7 +120,7 @@ export function BillFormProductsSection({
             />
 
             <div className="sm:col-span-3 space-y-1.5">
-              <Label className="text-xs text-zinc-650 dark:text-zinc-400 text-left block">
+              <Label className="text-xs text-zinc-650 dark:text-zinc-400 text-start block">
                 {t("quantity")}
               </Label>
               <Input
@@ -130,12 +130,12 @@ export function BillFormProductsSection({
                 onChange={(e) =>
                   setProductQty(Math.max(1, parseInt(e.target.value, 10) || 1))
                 }
-                className="bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 text-left"
+                className="bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 text-start"
               />
             </div>
 
             <div className="sm:col-span-3 space-y-1.5">
-              <Label className="text-xs text-zinc-650 dark:text-zinc-400 text-left block">
+              <Label className="text-xs text-zinc-650 dark:text-zinc-400 text-start block">
                 {t("purchase_price")} ({t("currency")})
               </Label>
               <Input
@@ -148,7 +148,7 @@ export function BillFormProductsSection({
                     Math.max(0, parseFloat(e.target.value) || 0)
                   )
                 }
-                className="bg-white dark:bg-zinc-955 border-zinc-200 dark:border-zinc-800 font-semibold text-left"
+                className="bg-white dark:bg-zinc-955 border-zinc-200 dark:border-zinc-800 font-semibold text-start"
               />
             </div>
           </div>
@@ -177,7 +177,7 @@ export function BillFormProductsSection({
                 </Button>
               </div>
             ) : (
-              <div className="text-xs text-zinc-400 text-left">
+              <div className="text-xs text-zinc-400 text-start">
                 {t("entering_custom_product", {
                   defaultValue: "Entering incoming product data",
                 })}
@@ -212,7 +212,7 @@ export function BillFormProductsSection({
         )}
 
         {errors.items && (
-          <p className="text-xs font-medium text-red-655 dark:text-red-400 text-left">
+          <p className="text-xs font-medium text-red-655 dark:text-red-400 text-start">
             {getValidationError(errors.items.message)}
           </p>
         )}

@@ -1,9 +1,8 @@
 "use client";
 
 import React from "react";
-import { Search, Filter, List, LayoutGrid } from "lucide-react";
+import { Search, Filter } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -18,8 +17,6 @@ interface NeedListFiltersProps {
   handleTabChange: (tab: string) => void;
   searchQuery: string;
   setSearchQuery: (query: string) => void;
-  viewMode: "list" | "card";
-  setViewMode: (mode: "list" | "card") => void;
   priorityFilter: string;
   setPriorityFilter: (filter: string) => void;
   setPage: (page: number) => void;
@@ -32,8 +29,6 @@ export function NeedListFilters({
   handleTabChange,
   searchQuery,
   setSearchQuery,
-  viewMode,
-  setViewMode,
   priorityFilter,
   setPriorityFilter,
   setPage,
@@ -42,7 +37,7 @@ export function NeedListFilters({
 }: NeedListFiltersProps) {
   return (
     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-1.5 rounded-xl bg-zinc-150/40 dark:bg-zinc-900/40 border border-zinc-200/40 dark:border-zinc-800/40 backdrop-blur-md">
-      <div className="flex bg-zinc-100 dark:bg-zinc-950 p-1 rounded-lg border border-zinc-200/60 dark:border-zinc-800/60 w-fit">
+      <div className="flex bg-zinc-100 dark:bg-zinc-955 p-1 rounded-lg border border-zinc-200/60 dark:border-zinc-800/60 w-fit">
         {["products", "needs"].map((tab) => (
           <button
             key={tab}
@@ -84,35 +79,6 @@ export function NeedListFilters({
           />
         </div>
 
-        {activeTab === "products" && (
-          <div className="flex items-center border border-zinc-200 dark:border-zinc-800 rounded-lg p-0.5 bg-white dark:bg-zinc-955/50 h-9 shrink-0">
-            <Button
-              type="button"
-              variant={viewMode === "list" ? "secondary" : "ghost"}
-              size="icon"
-              className={cn(
-                "h-7 w-7 rounded-md p-0 cursor-pointer",
-                viewMode === "list" && "bg-zinc-100 dark:bg-zinc-800 shadow-xs"
-              )}
-              onClick={() => setViewMode("list")}
-            >
-              <List className="h-3.5 w-3.5 text-zinc-700 dark:text-zinc-300" />
-            </Button>
-            <Button
-              type="button"
-              variant={viewMode === "card" ? "secondary" : "ghost"}
-              size="icon"
-              className={cn(
-                "h-7 w-7 rounded-md p-0 cursor-pointer",
-                viewMode === "card" && "bg-zinc-100 dark:bg-zinc-800 shadow-xs"
-              )}
-              onClick={() => setViewMode("card")}
-            >
-              <LayoutGrid className="h-3.5 w-3.5 text-zinc-700 dark:text-zinc-300" />
-            </Button>
-          </div>
-        )}
-
         {activeTab === "needs" && (
           <div className="w-[120px] shrink-0">
             <Select
@@ -141,3 +107,4 @@ export function NeedListFilters({
     </div>
   );
 }
+

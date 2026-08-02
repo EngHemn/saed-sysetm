@@ -35,7 +35,11 @@ export const metadata: Metadata = {
       { url: "/icons/icon-512x512.png", sizes: "512x512", type: "image/png" },
     ],
     apple: [
-      { url: "/icons/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+      {
+        url: "/icons/apple-touch-icon.png",
+        sizes: "180x180",
+        type: "image/png",
+      },
     ],
     shortcut: ["/icons/icon-192x192.png"],
   },
@@ -72,10 +76,10 @@ export default async function RootLayout({
     <html
       lang={lang}
       dir={dir}
-      className="h-full scroll-smooth"
+      className="h-full  scroll-smooth"
       suppressHydrationWarning
     >
-      <body className="min-h-[100dvh] overflow-x-hidden bg-background text-foreground antialiased font-sans">
+      <body className="min-h-[100dvh] pt-4 my-3 overflow-x-hidden bg-background text-foreground antialiased font-sans">
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
@@ -92,4 +96,3 @@ export default async function RootLayout({
     </html>
   );
 }
-

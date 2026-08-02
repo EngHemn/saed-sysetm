@@ -13,8 +13,6 @@ import { NeedListPagination, NeedDeleteDialog } from "./components/NeedListPagin
 
 export function NeedListScreen() {
   const {
-    viewMode,
-    setViewMode,
     activeTab,
     handleTabChange,
     searchQuery,
@@ -70,8 +68,6 @@ export function NeedListScreen() {
         handleTabChange={handleTabChange}
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
-        viewMode={viewMode}
-        setViewMode={setViewMode}
         priorityFilter={priorityFilter}
         setPriorityFilter={setPriorityFilter}
         setPage={setPage}
@@ -103,7 +99,6 @@ export function NeedListScreen() {
           >
             <NeedListAlertedProducts
               products={products}
-              viewMode={viewMode}
               searchQuery={searchQuery}
               clearFilters={clearFilters}
               language={language}
@@ -156,3 +151,4 @@ export function NeedListScreen() {
     </div>
   );
 }
+

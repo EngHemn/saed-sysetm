@@ -26,7 +26,9 @@ export function NeedFormScreen({ id }: NeedFormScreenProps) {
     setValue,
     errors,
     isSubmitting,
+    isCompressing,
     uploadingImage,
+    isImageLoading,
     imageError,
     imageUrl,
     selectedPriority,
@@ -165,21 +167,25 @@ export function NeedFormScreen({ id }: NeedFormScreenProps) {
                     accept="image/*"
                     onChange={handleImageUpload}
                     className="hidden"
-                    disabled={uploadingImage}
+                    disabled={isImageLoading}
                   />
                   <label
                     htmlFor="need-image-file"
                     className="flex flex-col items-center justify-center cursor-pointer space-y-2 w-full h-full py-4"
                   >
-                    {uploadingImage ? (
+                    {isImageLoading ? (
                       <Loader2 className="h-8 w-8 animate-spin text-zinc-500 shrink-0" />
                     ) : (
                       <Upload className="h-8 w-8 text-zinc-400 shrink-0" />
                     )}
                     <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300 text-center">
-                      {uploadingImage ? t("uploading_image", { defaultValue: "Uploading image..." }) : t("upload_image", { defaultValue: "Upload image" })}
+                      {isCompressing
+                        ? t("compressing_image", { defaultValue: "Compressing image..." })
+                        : uploadingImage
+                        ? t("uploading_image", { defaultValue: "Uploading image..." })
+                        : t("upload_image", { defaultValue: "Upload image" })}
                     </span>
-                    <span className="text-xs text-zinc-555">PNG, JPG, GIF up to 5MB</span>
+                    <span className="text-xs text-zinc-555">PNG, JPG, WebP (auto-optimized 400-500 KB)</span>
                   </label>
                 </div>
               )}
@@ -203,7 +209,7 @@ export function NeedFormScreen({ id }: NeedFormScreenProps) {
               </Link>
               <Button
                 type="submit"
-                disabled={isSubmitting || uploadingImage}
+                disabled={isSubmitting || isImageLoading}
                 className="bg-zinc-900 dark:bg-zinc-50 text-white dark:text-zinc-955 hover:bg-zinc-800 dark:hover:bg-zinc-200 cursor-pointer"
               >
                 {isSubmitting ? (

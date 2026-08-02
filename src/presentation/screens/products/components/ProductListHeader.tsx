@@ -28,7 +28,7 @@ export function ProductListHeader({
         </p>
       </div>
       <div className="flex items-center gap-2">
-        <div className="flex items-center border border-zinc-200 dark:border-zinc-800 rounded-lg p-0.5 bg-zinc-50 dark:bg-zinc-900/30">
+        <div className="hidden md:flex items-center border border-zinc-200 dark:border-zinc-800 rounded-lg p-0.5 bg-zinc-50 dark:bg-zinc-900/30">
           <Button
             type="button"
             variant={viewMode === "list" ? "secondary" : "ghost"}

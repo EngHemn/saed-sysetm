@@ -59,7 +59,7 @@ export function BillFormProductCombobox({
   const { formatCurrency } = useLanguage();
   return (
     <div className="sm:col-span-6 space-y-1.5 relative" ref={comboboxRef}>
-      <Label className="text-xs text-zinc-650 dark:text-zinc-400 text-left block">
+      <Label className="text-xs text-zinc-650 dark:text-zinc-400 text-start block">
         {t("search_product_title", {
           defaultValue: "Search Product Title",
         })}
@@ -83,7 +83,7 @@ export function BillFormProductCombobox({
           onFocus={() => setIsComboboxOpen(true)}
           className={`${
             dir === "rtl" ? "pr-9 pl-20" : "pl-9 pr-20"
-          } bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 text-left`}
+          } bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 text-start`}
         />
         <div
           className={`absolute ${
@@ -184,7 +184,7 @@ export function BillFormProductCombobox({
                         )}
                       </div>
                       <div className="truncate flex items-center gap-2">
-                        <p className="font-medium text-zinc-900 dark:text-zinc-100 truncate text-left">
+                        <p className="font-medium text-zinc-900 dark:text-zinc-100 truncate text-start">
                           {prodTitle}
                         </p>
                         {isAlreadyAdded && (

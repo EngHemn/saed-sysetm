@@ -66,7 +66,7 @@ export function CategoryDetailScreen({ id }: CategoryDetailScreenProps) {
             <h1 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
               {t("category_details")}
             </h1>
-            <p className="text-sm text-zinc-550 dark:text-zinc-400 text-left">
+            <p className="text-sm text-zinc-550 dark:text-zinc-400 text-start">
               {t("detailed_view_desc", { defaultValue: "Detailed view of the product category" })}
             </p>
           </div>
@@ -102,7 +102,7 @@ export function CategoryDetailScreen({ id }: CategoryDetailScreenProps) {
         <CardHeader className="p-6">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50 text-left">
+              <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50 text-start">
                 {category.title}
               </h2>
               {Array.isArray(category.brand) && category.brand.length > 0 && (
@@ -118,7 +118,7 @@ export function CategoryDetailScreen({ id }: CategoryDetailScreenProps) {
                 </div>
               )}
             </div>
-            <div className="flex items-center gap-1.5 text-xs text-zinc-500 dark:text-zinc-450 pt-1 text-left">
+            <div className="flex items-center gap-1.5 text-xs text-zinc-500 dark:text-zinc-450 pt-1 text-start">
               <Calendar className="h-3.5 w-3.5" />
               <span>{t("created_on")}: {new Date(category.createdAt).toLocaleDateString()}</span>
             </div>
@@ -127,10 +127,10 @@ export function CategoryDetailScreen({ id }: CategoryDetailScreenProps) {
 
         <CardContent className="p-6 pt-0 space-y-4">
           <div className="space-y-2">
-            <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 text-left">
+            <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 text-start">
               {t("description")}
             </h3>
-            <p className="text-sm text-zinc-600 dark:text-zinc-400 whitespace-pre-wrap leading-relaxed text-left">
+            <p className="text-sm text-zinc-600 dark:text-zinc-400 whitespace-pre-wrap leading-relaxed text-start">
               {category.description || t("no_description_provided", { defaultValue: "No description provided for this category." })}
             </p>
           </div>

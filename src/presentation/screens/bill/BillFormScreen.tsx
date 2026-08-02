@@ -42,7 +42,9 @@ export function BillFormScreen({ id }: BillFormScreenProps) {
     isAddProductDialogOpen,
     setIsAddProductDialogOpen,
     companyList,
+    isCompressing,
     uploadingImage,
+    isImageLoading,
     imageError,
     formSuccessMessage,
     drawerProduct,
@@ -118,6 +120,8 @@ export function BillFormScreen({ id }: BillFormScreenProps) {
           handleImageUpload={handleImageUpload}
           removeImage={removeImage}
           uploadingImage={uploadingImage}
+          isCompressing={isCompressing}
+          isImageLoading={isImageLoading}
           imageError={imageError}
           dir={dir}
           t={t}
@@ -163,7 +167,7 @@ export function BillFormScreen({ id }: BillFormScreenProps) {
           remainingAmount={remainingAmount}
           paymentStatus={paymentStatus}
           isSubmitting={isSubmitting}
-          uploadingImage={uploadingImage}
+          uploadingImage={isImageLoading}
           fieldsLength={fields.length}
           getValidationError={getValidationError}
           dir={dir}

@@ -70,14 +70,14 @@ export function NeedListStoredNeeds({
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+    <div className="grid grid-cols-1  md:grid-cols-2 gap-3">
       {needs.map((need) => (
         <motion.div
           key={need.id}
           whileHover={{ scale: 1.002, y: -1 }}
-          className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 p-3.5 rounded-xl border border-zinc-200/70 dark:border-zinc-800/70 bg-white dark:bg-zinc-950 shadow-xs hover:shadow-xs transition-all duration-300"
+          className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 p-2 rounded-xl border border-zinc-200/70 dark:border-zinc-800/70  dark:bg-zinc-950 shadow-xs hover:shadow-xs transition-all duration-300"
         >
-          <div className="flex items-center gap-3 flex-1 min-w-0">
+          <div className="flex items-center p-0 gap-3 flex-1 min-w-0">
             {need.image ? (
               <div className="relative h-12 w-12 rounded-lg overflow-hidden shrink-0 border border-zinc-200/50 dark:border-zinc-800/50 bg-zinc-50">
                 <Image
@@ -104,7 +104,7 @@ export function NeedListStoredNeeds({
                     need.priority === "Medium" &&
                       "bg-amber-500/10 text-amber-650 dark:bg-amber-955/20 dark:text-amber-400 border border-amber-500/20",
                     need.priority === "Low" &&
-                      "bg-zinc-500/10 text-zinc-650 dark:bg-zinc-800 dark:text-zinc-350 border border-zinc-200 dark:border-zinc-800"
+                      "bg-zinc-500/10 text-zinc-650 dark:bg-zinc-800 dark:text-zinc-350 border border-zinc-200 dark:border-zinc-800",
                   )}
                 >
                   {translatePriority(need.priority)}
@@ -138,7 +138,7 @@ export function NeedListStoredNeeds({
                       href={`/dashboard/needs/${need.id}?tab=needs-management`}
                       className={cn(
                         buttonVariants({ variant: "ghost", size: "icon" }),
-                        "h-8 w-8 text-zinc-650 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900 rounded-lg transition-colors"
+                        "h-8 w-8 text-zinc-650 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900 rounded-lg transition-colors",
                       )}
                     >
                       <Eye className="h-4 w-4" />
@@ -159,7 +159,7 @@ export function NeedListStoredNeeds({
                       href={`/dashboard/needs/${need.id}/edit?tab=needs-management`}
                       className={cn(
                         buttonVariants({ variant: "ghost", size: "icon" }),
-                        "h-8 w-8 text-zinc-650 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900 rounded-lg transition-colors"
+                        "h-8 w-8 text-zinc-650 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900 rounded-lg transition-colors",
                       )}
                     >
                       <Edit2 className="h-4 w-4" />
@@ -167,9 +167,7 @@ export function NeedListStoredNeeds({
                   }
                 />
                 <TooltipContent className="bg-zinc-950 text-white dark:bg-white dark:text-zinc-955 rounded-lg p-1.5 text-[9px]">
-                  <p>
-                    {t("edit_request", { defaultValue: "Edit Request" })}
-                  </p>
+                  <p>{t("edit_request", { defaultValue: "Edit Request" })}</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
